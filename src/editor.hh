@@ -8,6 +8,7 @@ class Editor {
 		std::vector <std::string> fileBuffer;
 		std::string               fileName;
 		Vec2                      cursorPosition;
+		bool                      saved;
 
 		// functions
 		Editor(std::string fname = "");

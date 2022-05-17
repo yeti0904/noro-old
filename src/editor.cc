@@ -1,4 +1,5 @@
 #include "editor.hh"
+#include "fs.hh"
 
 // Editor class functions
 
@@ -11,6 +12,19 @@ Editor::Editor(std::string fname) {
 
 void Editor::HandleInput(input_t input) {
 	switch (input) {
+		case CTRL('s'): {
+			std::string fileBufferString;
+			for (size_t i = 0; i < fileBuffer.size(); ++i) {
+				fileBufferString += fileBuffer[i] + '\n';
+			}
+			fileBufferString.erase(fileBufferString.length() - 1); // the last newline doesnt need to be there
+
+			FS::File::Write(fileName, fileBufferString);
+
+			saved = true;
+			
+			break;
+		}
 		case '\r':
 		case '\n': {
 			// insert if the cursor isnt at the end of the line
@@ -87,6 +101,7 @@ void Editor::HandleInput(input_t input) {
 			if (((input >= ' ') && (input <= '~')) || (input == '\t')) {
 				fileBuffer[cursorPosition.y].insert(cursorPosition.x, std::string(1, input));
 				++ cursorPosition.x;
+				saved = false;
 			}
 			break;
 		}

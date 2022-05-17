@@ -3,10 +3,13 @@
 // C standard libraries
 #include <stdint.h>
 #include <unistd.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 // C++ standard libraries
 #include <string>
 #include <vector>
+#include <fstream>
 
 // C libraries
 #include <ncurses.h>

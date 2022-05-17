@@ -2,6 +2,7 @@
 #include "editor.hh"
 #include "colourpairs.hh"
 #include "constants.hh"
+#include "app.hh"
 
 void Renderers::Noro::Global() {
 	// clear screen
@@ -17,6 +18,8 @@ void Renderers::Noro::Global() {
 	addstr(APP_NAME " " APP_VERSION);
 
 	mvhline(LINES - 1, 0, ' ', COLS);
+	move(LINES - 1, 0);
+	
 
 	attroff(COLOR_PAIR(COLOUR_PAIR_TITLEBAR));
 }
@@ -32,6 +35,9 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 	mvhline(editorWindow.position.y, editorWindow.position.x, ' ', editorWindow.size.x);
 	move(editorWindow.position.y, editorWindow.position.x);
 	printw("Editor (%s)", editorWindow.editors[editorWindow.tabIndex].fileName.c_str());
+	if (!editorWindow.editors[editorWindow.tabIndex].saved) {
+		addstr(" +");
+	}
 
 	attroff(A_REVERSE);
 

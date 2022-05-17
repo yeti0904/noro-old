@@ -49,7 +49,7 @@ void App::Update() {
 
 			if (!editorWindow.maximised) {
 				editorWindow.position = {1, 2};
-				editorWindow.size     = {(size_t)COLS - 2, (size_t)LINES - 3};
+				editorWindow.size     = {(size_t)COLS - 2, (size_t)LINES - 2};
 			}
 			
 			break;

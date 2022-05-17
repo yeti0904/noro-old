@@ -2,6 +2,7 @@
 #include "_components.hh"
 
 class EditorWindow;
+class App;
 
 namespace Renderers {
 	namespace Noro {
