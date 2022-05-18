@@ -3,6 +3,7 @@
 #include "constants.hh"
 #include "render.hh"
 #include "fs.hh"
+#include "terminal.hh"
 
 App::App(int argc, char** argv) {
 	// set variables
@@ -13,20 +14,22 @@ App::App(int argc, char** argv) {
 	}
 
 	// loop through arguments
-	for (size_t i = 0; i < args.size(); ++i) {
-		if (args[i][0] == '-') {
-			if ((args[i] == "--version") || (args[i] == "-v")) {
-				puts(APP_NAME " " APP_VERSION);
-				run = false;
-				return;
+	if (args.size() > 1) {
+		for (size_t i = 1; i < args.size(); ++i) {
+			if (args[i][0] == '-') {
+				if ((args[i] == "--version") || (args[i] == "-v")) {
+					puts(APP_NAME " " APP_VERSION);
+					run = false;
+					return;
+				}
 			}
-		}
-		else {
-			if (!FS::File::Exists(argv[1])) {
-				fprintf(stderr, "[ERROR] %s file doesnt exist", argv[1]);
-				exit(1);
+			else {
+				if (!FS::File::Exists(args[i])) {
+					fprintf(stderr, "[ERROR] %s file doesnt exist\n", args[i].c_str());
+					exit(1);
+				}
+				editorWindow.editors[editorWindow.tabIndex].OpenFile(args[i]);
 			}
-			editorWindow.editors[editorWindow.tabIndex].OpenFile(argv[1]);
 		}
 	}
 
@@ -60,6 +63,10 @@ void App::Update() {
 				editorWindow.size     = {(size_t)COLS - 2, (size_t)LINES - 2};
 			}
 			
+			break;
+		}
+		case CTRL('t'): {
+			Terminal::Run();
 			break;
 		}
 		default: {
