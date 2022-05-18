@@ -14,6 +14,9 @@ class Editor {
 		Editor(std::string fname = "");
 		void HandleInput(input_t input);
 		~Editor();
+
+		// util functions
+		void OpenFile(std::string fname);
 };
 
 class EditorWindow {

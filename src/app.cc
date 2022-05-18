@@ -2,6 +2,7 @@
 #include "iohandle.hh"
 #include "constants.hh"
 #include "render.hh"
+#include "fs.hh"
 
 App::App(int argc, char** argv) {
 	// set variables
@@ -19,6 +20,13 @@ App::App(int argc, char** argv) {
 				run = false;
 				return;
 			}
+		}
+		else {
+			if (!FS::File::Exists(argv[1])) {
+				fprintf(stderr, "[ERROR] %s file doesnt exist", argv[1]);
+				exit(1);
+			}
+			editorWindow.editors[editorWindow.tabIndex].OpenFile(argv[1]);
 		}
 	}
 

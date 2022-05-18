@@ -112,6 +112,11 @@ Editor::~Editor() {
 	
 }
 
+void Editor::OpenFile(std::string fname) {
+	fileName = fname;
+	fileBuffer = FS::File::ReadIntoVector(fname);
+}
+
 // EditorWindow class functions
 
 EditorWindow::EditorWindow() {
