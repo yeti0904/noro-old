@@ -80,7 +80,7 @@ void App::Update() {
 }
 
 void App::Render() {
-	Renderers::Noro::Global();
+	Renderers::Noro::Global(*this);
 	Renderers::Noro::RenderEditorWindow(editorWindow);
 	refresh();
 }

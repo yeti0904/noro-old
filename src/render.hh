@@ -6,7 +6,7 @@ class App;
 
 namespace Renderers {
 	namespace Noro {
-		void Global();
+		void Global(App& app);
 		void RenderEditorWindow(EditorWindow& editorWindow);
 	}
 }

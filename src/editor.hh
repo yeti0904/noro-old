@@ -9,6 +9,7 @@ class Editor {
 		std::string               fileName;
 		Vec2                      cursorPosition;
 		bool                      saved;
+		std::string               title;
 
 		// functions
 		Editor(std::string fname = "");
@@ -31,4 +32,7 @@ class EditorWindow {
 		// functions
 		EditorWindow();
 		~EditorWindow();
+
+		// util functions
+		Editor& GetCurrentEditor();
 };

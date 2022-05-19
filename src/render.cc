@@ -4,7 +4,7 @@
 #include "constants.hh"
 #include "app.hh"
 
-void Renderers::Noro::Global() {
+void Renderers::Noro::Global(App& app) {
 	// clear screen
 	for (int i = 0; i < LINES; ++i) {
 		mvhline(i, 0, ' ', COLS);
@@ -19,8 +19,22 @@ void Renderers::Noro::Global() {
 
 	mvhline(LINES - 1, 0, ' ', COLS);
 	move(LINES - 1, 0);
-	
+	if (app.editorWindow.maximised) {
+		addstr(app.editorWindow.editors[app.editorWindow.tabIndex].title.c_str());
+	}
 
+	{
+		std::string bottomBarInfo;
+		bottomBarInfo = 
+			std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.y) + ":"
+			+ std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.x);
+
+		// decide if bottom bar info should be rendered next to editor window title
+		if (!app.editorWindow.maximised || (LINES - app.editorWindow.GetCurrentEditor().title.length() > bottomBarInfo.length())) {
+			mvaddstr(LINES - 1, COLS - bottomBarInfo.length() - 1, bottomBarInfo.c_str());
+		}
+	}
+	
 	attroff(COLOR_PAIR(COLOUR_PAIR_TITLEBAR));
 }
 
@@ -34,10 +48,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 
 	mvhline(editorWindow.position.y, editorWindow.position.x, ' ', editorWindow.size.x);
 	move(editorWindow.position.y, editorWindow.position.x);
-	printw("Editor (%s)", editorWindow.editors[editorWindow.tabIndex].fileName.c_str());
-	if (!editorWindow.editors[editorWindow.tabIndex].saved) {
-		addstr(" +");
-	}
+	addstr(editorWindow.editors[editorWindow.tabIndex].title.c_str());
 
 	attroff(A_REVERSE);
 

@@ -22,8 +22,13 @@ void Editor::HandleInput(input_t input) {
 			FS::File::Write(fileName, fileBufferString);
 
 			saved = true;
+
+			title = "Editor (" + fileName + ")";
 			
 			break;
+		}
+		case 0: {
+			return;
 		}
 		case '\r':
 		case '\n': {
@@ -99,6 +104,9 @@ void Editor::HandleInput(input_t input) {
 		}
 		default: {
 			if (((input >= ' ') && (input <= '~')) || (input == '\t')) {
+				if (saved) {
+					title = "Editor (" + fileName + ") +";
+				}
 				fileBuffer[cursorPosition.y].insert(cursorPosition.x, std::string(1, input));
 				++ cursorPosition.x;
 				saved = false;
@@ -128,6 +136,10 @@ EditorWindow::EditorWindow() {
 	maximised = true;
 	position  = {0, 1};
 	size      = {20, 10};
+}
+
+Editor& EditorWindow::GetCurrentEditor() {
+	return editors[tabIndex];
 }
 
 EditorWindow::~EditorWindow() {
