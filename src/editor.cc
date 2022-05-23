@@ -120,6 +120,9 @@ void Editor::OpenFile(std::string fname) {
 	fileName   = Util::StringReplaceAll(fname, "~", home);
 	fileBuffer = FS::File::ReadIntoVector(fileName);
 	title      = "Editor (" + fileName + ")";
+	if (fileBuffer.size() == 0) {
+		fileBuffer = {""};
+	}
 }
 
 void Editor::SaveFile() {
