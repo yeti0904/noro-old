@@ -1,6 +1,9 @@
 # noro
 the new unix/linux text editor
 
+## known bugs
+none
+
 ## screenshots
 <img src="/pic/noro.png">
 
