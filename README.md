@@ -10,3 +10,5 @@ the new unix/linux text editor
 | Ctrl + Q   | Quit                       |
 | Ctrl + E   | Maximise/unmaximise window |
 | Ctrl + S   | Save file                  |
+| Ctrl + D   | Save as                    |
+| Ctrl + O   | Open                       |

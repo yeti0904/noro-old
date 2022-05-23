@@ -4,11 +4,17 @@
 #include "render.hh"
 #include "fs.hh"
 #include "terminal.hh"
+#include "textboxEvents.hh"
 
 App::App(int argc, char** argv) {
 	// set variables
-	run     = true;
-	wasInit = false;
+	run            = true;
+	wasInit        = false;
+	textboxFocused = false;
+	textbox.size.x = 40;
+	textbox.size.y = 5;
+	FPSLimit       = 60;
+	config.tabSize = 4;
 	for (int i = 0; i < argc; ++i) {
 		args.push_back(argv[i]);
 	}
@@ -35,6 +41,7 @@ App::App(int argc, char** argv) {
 
 	// call init functions
 	IOHandle::Init();
+	TextboxEvents::Init(*this);
 	wasInit = true;
 }
 
@@ -50,38 +57,75 @@ void App::Update() {
 	// input
 	input_t input = getch();
 
-	switch (input) {
-		case CTRL('q'): {
-			run = false;
-			break;
+	if (textboxFocused) {
+		textbox.HandleInput(input);
+		if (textbox.complete) {
+			textboxFocused = false;
 		}
-		case CTRL('e'): {
-			editorWindow.maximised = !editorWindow.maximised;
-
-			if (!editorWindow.maximised) {
-				editorWindow.position = {1, 2};
-				editorWindow.size     = {(size_t)COLS - 2, (size_t)LINES - 2};
+	}
+	else {
+		switch (input) {
+			case CTRL('q'): { // quit
+				run = false;
+				break;
 			}
-			
-			break;
-		}
-		case CTRL('t'): {
-			Terminal::Run();
-			break;
-		}
-		default: {
-			editorWindow.editors[editorWindow.tabIndex].HandleInput(input);
-			break;
+			case CTRL('e'): { // maximise/minimise
+				editorWindow.maximised = !editorWindow.maximised;
+
+				if (!editorWindow.maximised) {
+					editorWindow.position = {1, 2};
+					editorWindow.size     = {(size_t)COLS - 2, (size_t)LINES - 2};
+				}
+				
+				break;
+			}
+			case CTRL('t'): { // suspend to terminal
+				Terminal::Run();
+				break;
+			}
+			case CTRL('d'): { // save as
+				textbox.CenterOnScreen();
+				textboxFocused = true;
+				textbox.Init("Save As", "Type a filename to save the file as");
+				textbox.completionCallback = TextboxEvents::SaveAs;
+				break;
+			}
+			case CTRL('s'): { // save
+				editorWindow.editors[editorWindow.tabIndex].SaveFile();
+				alert.NewAlert("Saved " + editorWindow.editors[editorWindow.tabIndex].fileName, ALERT_TIMER);
+				break;
+			}
+			case CTRL('o'): { // open
+				textbox.CenterOnScreen();
+				textboxFocused = true;
+				textbox.Init("Open", "Type a filename to open");
+				textbox.completionCallback = TextboxEvents::Open;
+				break;
+			}
+			default: {
+				editorWindow.editors[editorWindow.tabIndex].HandleInput(input);
+				break;
+			}
 		}
 	}
 
+	if (alert.active) {
+		alert.UpdateTimer(1000/FPSLimit);
+	}
+
 	Render();
-	usleep(1000000/60);
+	usleep(1000000/FPSLimit);
 }
 
 void App::Render() {
 	Renderers::Noro::Global(*this);
 	Renderers::Noro::RenderEditorWindow(editorWindow);
+	if (textboxFocused) {
+		textbox.Render();
+	}
+	if (alert.active) {
+		alert.Render();
+	}
 	refresh();
 }
 

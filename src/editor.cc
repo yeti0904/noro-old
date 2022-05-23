@@ -1,5 +1,8 @@
 #include "editor.hh"
 #include "fs.hh"
+#include "textboxEvents.hh"
+#include "util.hh"
+#include "iohandle.hh"
 
 // Editor class functions
 
@@ -8,25 +11,12 @@ Editor::Editor(std::string fname) {
 	fileBuffer     = {""};
 	fileName       = fname == ""? "Unnamed" : fname;
 	cursorPosition = {0, 0};
+	title          = "Editor (" + fileName + ")";
+	saved          = true;
 }
 
 void Editor::HandleInput(input_t input) {
 	switch (input) {
-		case CTRL('s'): {
-			std::string fileBufferString;
-			for (size_t i = 0; i < fileBuffer.size(); ++i) {
-				fileBufferString += fileBuffer[i] + '\n';
-			}
-			fileBufferString.erase(fileBufferString.length() - 1); // the last newline doesnt need to be there
-
-			FS::File::Write(fileName, fileBufferString);
-
-			saved = true;
-
-			title = "Editor (" + fileName + ")";
-			
-			break;
-		}
 		case 0: {
 			return;
 		}
@@ -121,8 +111,29 @@ Editor::~Editor() {
 }
 
 void Editor::OpenFile(std::string fname) {
-	fileName = fname;
-	fileBuffer = FS::File::ReadIntoVector(fname);
+	char* home = getenv("HOME");
+	if (home == NULL) {
+		IOHandle::Quit();
+		fprintf(stderr, "getenv(\"HOME\") failed");
+		exit(1);
+	}
+	fileName   = Util::StringReplaceAll(fname, "~", home);
+	fileBuffer = FS::File::ReadIntoVector(fileName);
+	title      = "Editor (" + fileName + ")";
+}
+
+void Editor::SaveFile() {
+	std::string fileBufferString;
+	for (size_t i = 0; i < fileBuffer.size(); ++i) {
+		fileBufferString += fileBuffer[i] + '\n';
+	}
+	fileBufferString.erase(fileBufferString.length() - 1); // the last newline doesnt need to be there
+
+	FS::File::Write(fileName, fileBufferString);
+
+	saved = true;
+
+	title = "Editor (" + fileName + ")";
 }
 
 // EditorWindow class functions

@@ -18,6 +18,7 @@ class Editor {
 
 		// util functions
 		void OpenFile(std::string fname);
+		void SaveFile();
 };
 
 class EditorWindow {

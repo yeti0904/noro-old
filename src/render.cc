@@ -4,7 +4,12 @@
 #include "constants.hh"
 #include "app.hh"
 
+uint8_t tabSize;
+
 void Renderers::Noro::Global(App& app) {
+	// set global variables for use in window renderers
+	tabSize = app.config.tabSize;
+	
 	// clear screen
 	for (int i = 0; i < LINES; ++i) {
 		mvhline(i, 0, ' ', COLS);
@@ -30,7 +35,7 @@ void Renderers::Noro::Global(App& app) {
 			+ std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.x);
 
 		// decide if bottom bar info should be rendered next to editor window title
-		if (!app.editorWindow.maximised || (LINES - app.editorWindow.GetCurrentEditor().title.length() > bottomBarInfo.length())) {
+		if (!app.editorWindow.maximised || (LINES - app.editorWindow.GetCurrentEditor().title.length() - 1 > bottomBarInfo.length())) {
 			mvaddstr(LINES - 1, COLS - bottomBarInfo.length() - 1, bottomBarInfo.c_str());
 		}
 	}
@@ -69,6 +74,12 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 			switch (editor.fileBuffer[i][j]) {
 				case '\n':
 				case '\r': {
+					break;
+				}
+				case '\t': {
+					for (uint8_t i = 0; i < tabSize; ++i) {
+						addch(' ');
+					}
 					break;
 				}
 				case '\0': {

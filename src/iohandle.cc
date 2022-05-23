@@ -15,6 +15,7 @@ void IOHandle::Init() {
 	// init colour pairs
 	init_pair(COLOUR_PAIR_EDITOR, COLOR_WHITE, COLOR_BLUE);
 	init_pair(COLOUR_PAIR_TITLEBAR, COLOR_BLACK, COLOR_WHITE);
+	init_pair(COLOUR_PAIR_ALERT, COLOR_BLACK, COLOR_GREEN);
 }
 
 void IOHandle::Quit() {
