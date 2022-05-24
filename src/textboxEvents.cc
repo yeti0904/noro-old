@@ -23,7 +23,7 @@ void TextboxEvents::Open(Textbox& textbox) {
 }
 
 void TextboxEvents::Find(Textbox& textbox) {
-	for (size_t i = 0; i < (*app).editorWindow.GetCurrentEditor().fileBuffer.size(); ++i) {
+	for (size_t i = (*app).editorWindow.GetCurrentEditor().cursorPosition.y; i < (*app).editorWindow.GetCurrentEditor().fileBuffer.size(); ++i) {
 		std::string line = (*app).editorWindow.GetCurrentEditor().fileBuffer[i];
 		if (line.find(textbox.userInput) != std::string::npos) {
 			(*app).alert.NewAlert("Found text", ALERT_TIMER);
