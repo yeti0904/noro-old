@@ -2,7 +2,7 @@
 the new unix/linux text editor
 
 ## known bugs
-none
+file contents get rendered beyond the editor window when the editor window is not maximised
 
 ## screenshots
 <img src="/pic/noro.png">

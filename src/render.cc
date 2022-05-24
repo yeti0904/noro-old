@@ -64,7 +64,10 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 		mvhline(i, editorWindow.position.x, ' ', editorWindow.size.x);
 	}
 
-	for (size_t i = 0; (i < editor.fileBuffer.size()) && (i < editorWindow.size.y); ++i) {
+	for (size_t i = 0; (i < editorWindow.size.y - 1) && (i < editor.fileBuffer.size()); ++i) {
+		if (i >= editorWindow.size.y - 1) {
+			break;
+		}
 		move(editorWindow.position.y + i + maximised, editorWindow.position.x);
 		for (size_t j = 0; (j <= editor.fileBuffer[i].length()) && (j < editorWindow.size.x); ++j) {
 			if ((i == editor.cursorPosition.y) && (j == editor.cursorPosition.x)) {

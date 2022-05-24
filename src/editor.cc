@@ -117,7 +117,8 @@ void Editor::OpenFile(std::string fname) {
 		fprintf(stderr, "getenv(\"HOME\") failed");
 		exit(1);
 	}
-	fileName   = Util::StringReplaceAll(fname, "~", home);
+	// fileName   = Util::StringReplaceAll(fname, "~", home);
+	fileName   = fname;
 	fileBuffer = FS::File::ReadIntoVector(fileName);
 	title      = "Editor (" + fileName + ")";
 	if (fileBuffer.size() == 0) {

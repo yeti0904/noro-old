@@ -102,6 +102,13 @@ void App::Update() {
 				textbox.completionCallback = TextboxEvents::Open;
 				break;
 			}
+			case CTRL('f'): {
+				textbox.CenterOnScreen();
+				textboxFocused = true;
+				textbox.Init("Find", "Type the text you want to find");
+				textbox.completionCallback = TextboxEvents::Find;
+				break;
+			}
 			default: {
 				editorWindow.editors[editorWindow.tabIndex].HandleInput(input);
 				break;

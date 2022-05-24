@@ -21,3 +21,16 @@ void TextboxEvents::Open(Textbox& textbox) {
 	(*app).alert.NewAlert("Opened " + textbox.userInput, ALERT_TIMER);
 	// ok it does
 }
+
+void TextboxEvents::Find(Textbox& textbox) {
+	for (size_t i = 0; i < (*app).editorWindow.GetCurrentEditor().fileBuffer.size(); ++i) {
+		std::string line = (*app).editorWindow.GetCurrentEditor().fileBuffer[i];
+		if (line.find(textbox.userInput) != std::string::npos) {
+			(*app).alert.NewAlert("Found text", ALERT_TIMER);
+			(*app).editorWindow.GetCurrentEditor().cursorPosition.x = line.find(textbox.userInput);
+			(*app).editorWindow.GetCurrentEditor().cursorPosition.y = i;
+			return;
+		}
+	}
+	(*app).alert.NewAlert("Not found", ALERT_TIMER);
+}

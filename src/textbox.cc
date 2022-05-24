@@ -17,9 +17,10 @@ Textbox::~Textbox() {
 
 void Textbox::Init(std::string p_title, std::string p_content) {
 	Textbox();
-	title    = p_title;
-	content  = p_content;
-	complete = false;
+	title     = p_title;
+	content   = p_content;
+	userInput = "";
+	complete  = false;
 }
 
 void Textbox::HandleInput(input_t input) {
@@ -32,6 +33,7 @@ void Textbox::HandleInput(input_t input) {
 			cursorX            = 0;
 			scrollX            = 0;
 			completionCallback = nullptr;
+			userInput          = "";
 			break;
 		}
 		case KEY_LEFT: {
@@ -67,13 +69,14 @@ void Textbox::HandleInput(input_t input) {
 		case '\n': { // confirm input
 			complete           = true;
 			code               = TextboxExitCode::Complete;
+			if (completionCallback != nullptr) {
+				completionCallback(*this);
+			}
 			content            = "";
 			cursorX            = 0;
 			scrollX            = 0;
 			completionCallback = nullptr;
-			if (completionCallback != nullptr) {
-				completionCallback(*this);
-			}
+			userInput          = "";
 			break;
 		}
 		default: {
