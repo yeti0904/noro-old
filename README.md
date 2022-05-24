@@ -1,6 +1,18 @@
 # noro
 the new unix/linux text editor
 
+## compile
+### cmake
+```
+cmake .
+cmake --build .
+```
+
+### manually
+```
+g++ src/*.cc -lncurses -Wall -Wextra -Werror -pedantic -o noro
+```
+
 ## known bugs
 file contents get rendered beyond the editor window when the editor window is not maximised
 
