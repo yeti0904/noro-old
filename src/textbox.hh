@@ -13,16 +13,18 @@ enum class TextboxExitCode {
 class Textbox {
 	public:
 		// variables
-		std::string            title;
-		std::string            content;
-		std::string            userInput;
-		size_t                 cursorX;
-		size_t                 scrollX;
-		bool                   complete;
-		TextboxExitCode        code;
-		Vec2                   position;
-		Vec2                   size;
-		TextboxCompletionEvent completionCallback;
+		std::string               title;
+		std::string               content;
+		std::string               userInput;
+		size_t                    cursorX;
+		size_t                    scrollX;
+		bool                      complete;
+		TextboxExitCode           code;
+		Vec2                      position;
+		Vec2                      size;
+		TextboxCompletionEvent    completionCallback;
+		std::vector <std::string> history;
+		ssize_t                   historySelection; // value -1 = nothing selected
 		
 		// functions
 		Textbox();

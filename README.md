@@ -16,3 +16,10 @@ file contents get rendered beyond the editor window when the editor window is no
 | Ctrl + D   | Save as                    |
 | Ctrl + O   | Open                       |
 | Ctrl + F   | Find                       |
+
+
+## features
+### textbox history
+use the up/down arrow keys to move up and down through your textbox history
+
+textbox history is limited to 50 entries, you can change this in src/constants.hh

@@ -1,5 +1,6 @@
 #include "textbox.hh"
 #include "colourpairs.hh"
+#include "constants.hh"
 
 Textbox::Textbox() {
 	// init variables
@@ -17,10 +18,11 @@ Textbox::~Textbox() {
 
 void Textbox::Init(std::string p_title, std::string p_content) {
 	Textbox();
-	title     = p_title;
-	content   = p_content;
-	userInput = "";
-	complete  = false;
+	title            = p_title;
+	content          = p_content;
+	userInput        = "";
+	complete         = false;
+	historySelection = -1;
 }
 
 void Textbox::HandleInput(input_t input) {
@@ -34,6 +36,7 @@ void Textbox::HandleInput(input_t input) {
 			scrollX            = 0;
 			completionCallback = nullptr;
 			userInput          = "";
+			historySelection   = -1;
 			break;
 		}
 		case KEY_LEFT: {
@@ -54,6 +57,32 @@ void Textbox::HandleInput(input_t input) {
 			}
 			break;
 		}
+		case KEY_UP: { // go up in history
+			if (historySelection > 0) {
+				-- historySelection;
+			}
+			else if (historySelection == -1) {
+				historySelection = history.size() - 1;
+			}
+			userInput = history[historySelection];
+			cursorX   = userInput.length();
+			break;
+		}
+		case KEY_DOWN: { // go down in history
+			if (historySelection == -1) {
+				break;
+			}
+			else if ((size_t)historySelection < history.size() - 1) {
+				++ historySelection;
+				userInput = history[historySelection];
+				cursorX   = userInput.length();
+			}
+			else {
+				userInput = "";
+				historySelection = -1;
+			}
+			break;
+		}
 		case 127: // also used for backspace key
 		case KEY_BACKSPACE: {
 			if (cursorX > 0) {
@@ -69,14 +98,25 @@ void Textbox::HandleInput(input_t input) {
 		case '\n': { // confirm input
 			complete           = true;
 			code               = TextboxExitCode::Complete;
+
+			// add input to input history
+			history.push_back(userInput);
+			if (history.size() > MAX_HISTORY) {
+				history.erase(history.begin());
+			}
+
+			// call callback			
 			if (completionCallback != nullptr) {
 				completionCallback(*this);
 			}
+
+			// reset textbox
 			content            = "";
 			cursorX            = 0;
 			scrollX            = 0;
 			completionCallback = nullptr;
 			userInput          = "";
+			historySelection   = -1;
 			break;
 		}
 		default: {
