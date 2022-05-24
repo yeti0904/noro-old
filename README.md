@@ -15,3 +15,4 @@ file contents get rendered beyond the editor window when the editor window is no
 | Ctrl + S   | Save file                  |
 | Ctrl + D   | Save as                    |
 | Ctrl + O   | Open                       |
+| Ctrl + F   | Find                       |
