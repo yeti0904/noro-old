@@ -15,6 +15,9 @@
 // C libraries
 #include <ncurses.h>
 
+// C++ libraries
+#include "../inicxx/inicxx.hh"
+
 // types
 typedef uint16_t input_t;
 

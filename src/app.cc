@@ -39,8 +39,88 @@ App::App(int argc, char** argv) {
 		}
 	}
 
+	// create files/folders in .config
+	const char* homeraw = getenv("HOME");
+	if (homeraw == nullptr) {
+		fprintf(stderr, "[ERROR] could not get enviroment variable HOME\n");
+		exit(1);
+	}
+	std::string home = homeraw;
+	if (!FS::Directory::Exists(home + "/.config")) {
+		FS::Directory::Create(home + "/.config");
+	}
+	if (!FS::Directory::Exists(home + "/.config/noro")) {
+		FS::Directory::Create(home + "/.config/noro");
+	}
+	if (!FS::Directory::Exists(home + "/.config/noro/themes")) {
+		FS::Directory::Create(home + "/.config/noro/themes");
+	}
+	if (!FS::File::Exists(home + "/.config/noro/settings.ini")) {
+		FS::File::Write(home + "/.config/noro/settings.ini",
+			"# noro properties\n"
+			"theme = noro"
+		);
+	}
+	if (!FS::File::Exists(home + "/.config/noro/themes/noro.ini")) {
+		FS::File::Write(home + "/.config/noro/themes/noro.ini",
+			"# noro theme\n"
+			"editorFG = white\n"
+			"editorBG = blue\n"
+			"titlebarFG = black\n"
+			"titlebarBG = white\n"
+			"alertFG = black\n"
+			"alertBG = green"
+		);
+	}
+
+	// set up config
+	try {
+		settings.Parse(FS::File::Read(std::string(home) + "/.config/noro/settings.ini"));
+	}
+	catch (const INI::ParserException& error) {
+		fprintf(stderr,
+			"[ERROR] settings.ini:%i : %s\n",
+			(int)error.Line(),
+			error.What().c_str()
+		);
+	}
+	std::vector <std::string> requiredProperties = {
+		"theme"
+	};
+
+	/*std::vector <std::string> props;
+	settings.listProps(props);
+	for (size_t i = 0; i < props.size(); ++i) {
+		puts(props[i].c_str());
+	}*/
+	
+	for (size_t i = 0; i < requiredProperties.size(); ++i) {
+		if (!settings.Contains(INI::DefaultSection, requiredProperties[i])) {
+			fprintf(stderr, "[ERROR] missing property in config file: %s\n", requiredProperties[i].c_str());
+			exit(1);
+		}
+	}
+
+	INI::Structure <char> themeConfig;
+	try {
+		themeConfig.Parse(FS::File::Read(
+			std::string(home) + "/.config/noro/themes/"
+			+ settings[INI::DefaultSection]["theme"] + ".ini"
+		));
+	}
+	catch (const INI::ParserException& error) {
+		fprintf(stderr,
+			"[ERROR] settings.ini:%i : %s\n",
+			(int)error.Line(),
+			error.What().c_str()
+		);
+	}
+	theme.ConstructTheme(themeConfig);
+
 	// call init functions
 	IOHandle::Init();
+	IOHandle::InitColours(theme);
+	
 	TextboxEvents::Init(*this);
 	wasInit = true;
 }

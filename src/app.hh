@@ -4,6 +4,7 @@
 #include "textbox.hh"
 #include "alert.hh"
 #include "config.hh"
+#include "themes.hh"
 
 class App {
 	public:
@@ -17,6 +18,8 @@ class App {
 		uint8_t                   FPSLimit;
 		Alert                     alert;
 		AppConfig                 config;
+		INI::Structure <char>     settings;
+		Theme                     theme;
 		
 		// functions
 		App(int argc, char** argv);

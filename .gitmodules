@@ -1,0 +1,3 @@
+[submodule "inicxx"]
+	path = inicxx
+	url = https://github.com/lordoftrident/inicxx

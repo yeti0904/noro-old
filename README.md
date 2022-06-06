@@ -29,7 +29,6 @@ file contents get rendered beyond the editor window when the editor window is no
 | Ctrl + O   | Open                       |
 | Ctrl + F   | Find                       |
 
-
 ## features
 ### textbox history
 use the up/down arrow keys to move up and down through your textbox history
