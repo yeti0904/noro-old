@@ -3,4 +3,5 @@
 
 namespace Util {
 	std::string StringReplaceAll(std::string src, std::string replaceWhat, std::string replaceWith);
+	bool        IsNumber(std::string str);
 }

@@ -5,6 +5,7 @@
 #include "fs.hh"
 #include "terminal.hh"
 #include "textboxEvents.hh"
+#include "util.hh"
 
 App::App(int argc, char** argv) {
 	// set variables
@@ -58,7 +59,8 @@ App::App(int argc, char** argv) {
 	if (!FS::File::Exists(home + "/.config/noro/settings.ini")) {
 		FS::File::Write(home + "/.config/noro/settings.ini",
 			"# noro properties\n"
-			"theme = noro"
+			"theme = noro\n"
+			"tabSize = 4"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/noro.ini")) {
@@ -85,7 +87,8 @@ App::App(int argc, char** argv) {
 		);
 	}
 	std::vector <std::string> requiredProperties = {
-		"theme"
+		"theme",
+		"tabSize"
 	};
 
 	/*std::vector <std::string> props;
@@ -100,6 +103,13 @@ App::App(int argc, char** argv) {
 			exit(1);
 		}
 	}
+
+	// handle config
+	if (!Util::IsNumber(settings[INI::DefaultSection]["tabSize"])) {
+		fputs("[ERROR] property tabSize is not an integer\n", stderr);
+		exit(1);
+	}
+	config.tabSize = std::stoi(settings[INI::DefaultSection]["tabSize"]);
 
 	INI::Structure <char> themeConfig;
 	try {
