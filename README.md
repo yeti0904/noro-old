@@ -14,7 +14,7 @@ g++ src/*.cc -lncurses -Wall -Wextra -Werror -pedantic -o noro
 ```
 
 ## known bugs
-file contents get rendered beyond the editor window when the editor window is not maximised
+crashes when scrolling horizontally
 
 ## screenshots
 <img src="/pic/noro.png">

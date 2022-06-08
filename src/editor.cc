@@ -11,11 +11,13 @@ Editor::Editor(std::string fname) {
 	fileBuffer     = {""};
 	fileName       = fname == ""? "Unnamed" : fname;
 	cursorPosition = {0, 0};
+	scroll         = {0, 0};
 	title          = "Editor (" + fileName + ")";
 	saved          = true;
 }
 
 void Editor::HandleInput(input_t input) {
+	bool moved;
 	switch (input) {
 		case 0: {
 			return;
@@ -32,6 +34,7 @@ void Editor::HandleInput(input_t input) {
 			}
 			++ cursorPosition.y;
 			cursorPosition.x = 0;
+			moved = true;
 			break;
 		}
 		case 127: // also used for backspace key
@@ -45,26 +48,31 @@ void Editor::HandleInput(input_t input) {
 				fileBuffer.erase(fileBuffer.begin() + cursorPosition.y);
 				-- cursorPosition.y;
 				cursorPosition.x = fileBuffer[cursorPosition.y].size(); 
+				moved = true;
 			}
 			break;
 		}
 		case KEY_LEFT: {
 			if (cursorPosition.x != 0) {
 				-- cursorPosition.x;
+				moved = true;
 			}
 			else if (cursorPosition.y > 0) {
 				-- cursorPosition.y;
 				cursorPosition.x = 0;
+				moved = true;
 			}
 			break;
 		}
 		case KEY_RIGHT: {
 			if (cursorPosition.x < fileBuffer[cursorPosition.y].length() + 1) {
 				++ cursorPosition.x;
+				moved = true;
 			}
 			else if (cursorPosition.y > fileBuffer.size() - 1) {
 				++ cursorPosition.y;
 				cursorPosition.x = 0;
+				moved = true;
 			}
 			break;
 		}
@@ -74,9 +82,11 @@ void Editor::HandleInput(input_t input) {
 				if (cursorPosition.x > fileBuffer[cursorPosition.y].size()) {
 					cursorPosition.x = fileBuffer[cursorPosition.y].size();
 				}
+				moved = true;
 			}
 			else {
 				cursorPosition.x = 0;
+				moved = true;
 			}
 			break;
 		}
@@ -86,9 +96,11 @@ void Editor::HandleInput(input_t input) {
 				if (cursorPosition.x > fileBuffer[cursorPosition.y].size()) {
 					cursorPosition.x = fileBuffer[cursorPosition.y].size();
 				}
+				moved = true;
 			}
 			else {
 				cursorPosition.x = fileBuffer[cursorPosition.y].size();
+				moved = true;
 			}
 			break;
 		}
@@ -100,8 +112,24 @@ void Editor::HandleInput(input_t input) {
 				fileBuffer[cursorPosition.y].insert(cursorPosition.x, std::string(1, input));
 				++ cursorPosition.x;
 				saved = false;
+				moved = true;
 			}
 			break;
+		}
+	}
+
+	if (moved) {
+		if ((ssize_t) cursorPosition.x - (ssize_t) scroll.x < 0) {
+			-- scroll.x;
+		}
+		else if (cursorPosition.x - scroll.x > (*parent).size.x - 2) {
+			++ scroll.x;
+		}
+		if ((ssize_t) cursorPosition.y - (ssize_t) scroll.y < 0) {
+			-- scroll.y;
+		}
+		else if (cursorPosition.y - scroll.y > (*parent).size.y - 2) {
+			++ scroll.y;
 		}
 	}
 }
@@ -145,6 +173,7 @@ void Editor::SaveFile() {
 EditorWindow::EditorWindow() {
 	// create new editor tab
 	editors.push_back(Editor());
+	editors.back().parent = this;
 	tabIndex = 0;
 
 	// set default values

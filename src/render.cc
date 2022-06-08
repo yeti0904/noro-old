@@ -12,7 +12,7 @@ void Renderers::Noro::Global(App& app) {
 	
 	// clear screen
 	for (int i = 0; i < LINES; ++i) {
-		mvhline(i, 0, ' ', COLS);
+		mvhline(i, 0, 'c', COLS);
 	}
 
 	// render title/bottom bar
@@ -64,12 +64,15 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 		mvhline(i, editorWindow.position.x, ' ', editorWindow.size.x);
 	}
 
-	for (size_t i = 0; (i < editorWindow.size.y - 1) && (i < editor.fileBuffer.size()); ++i) {
-		if (i >= editorWindow.size.y - 1) {
-			break;
-		}
-		move(editorWindow.position.y + i + maximised, editorWindow.position.x);
-		for (size_t j = 0; (j <= editor.fileBuffer[i].length()) && (j < editorWindow.size.x); ++j) {
+	for (size_t i = editor.scroll.y; 
+		(i - editor.scroll.y < (editorWindow.size.y - maximised - 1)) &&
+		(i < editor.fileBuffer.size());
+	++i) {
+		move((editorWindow.position.y + i + maximised) - editor.scroll.y, editorWindow.position.x);
+		for (size_t j = editor.scroll.x;
+			(j - editor.scroll.x <= editor.fileBuffer[i].length()) &&
+			(j - editor.scroll.x < editorWindow.size.x);
+		++j) {
 			if ((i == editor.cursorPosition.y) && (j == editor.cursorPosition.x)) {
 				attron(A_REVERSE);
 			}

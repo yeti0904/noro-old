@@ -2,14 +2,18 @@
 #include "_components.hh"
 #include "structures.hh"
 
+class EditorWindow;
+
 class Editor {
 	public:
 		// variables
 		std::vector <std::string> fileBuffer;
 		std::string               fileName;
 		Vec2                      cursorPosition;
+		Vec2                      scroll;
 		bool                      saved;
 		std::string               title;
+		EditorWindow*             parent;
 
 		// functions
 		Editor(std::string fname = "");
