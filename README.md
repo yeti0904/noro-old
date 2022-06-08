@@ -1,6 +1,11 @@
 # noro
 the new unix/linux text editor
 
+## download
+```
+git clone --recurse-submodules https://github.com/MESYETI/noro
+```
+
 ## compile
 ### cmake
 ```
