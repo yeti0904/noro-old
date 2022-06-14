@@ -159,6 +159,8 @@ void App::Update() {
 				run = false;
 				break;
 			}
+			/*
+			dead feature lies here
 			case CTRL('e'): { // maximise/minimise
 				editorWindow.maximised = !editorWindow.maximised;
 
@@ -169,6 +171,7 @@ void App::Update() {
 				
 				break;
 			}
+			*/
 			case CTRL('t'): { // suspend to terminal
 				Terminal::Run();
 				break;
