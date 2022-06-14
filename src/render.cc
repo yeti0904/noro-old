@@ -31,12 +31,22 @@ void Renderers::Noro::Global(App& app) {
 	{
 		std::string bottomBarInfo;
 		bottomBarInfo = 
-			std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.y) + ":"
+			std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.y)
+				+ ":"
 			+ std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.x);
 
 		// decide if bottom bar info should be rendered next to editor window title
-		if (!app.editorWindow.maximised || (LINES - app.editorWindow.GetCurrentEditor().title.length() - 1 > bottomBarInfo.length())) {
-			mvaddstr(LINES - 1, COLS - bottomBarInfo.length() - 1, bottomBarInfo.c_str());
+		if (
+			!app.editorWindow.maximised ||
+			(LINES - app.editorWindow.GetCurrentEditor().title.length() - 1
+				> bottomBarInfo.length()
+			)
+		) {
+			mvaddstr(
+				LINES - 1,
+				COLS - bottomBarInfo.length() - 1,
+				bottomBarInfo.c_str()
+			);
 		}
 	}
 	
@@ -51,7 +61,9 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 	// render titlebar
 	attron(A_REVERSE);
 
-	mvhline(editorWindow.position.y, editorWindow.position.x, ' ', editorWindow.size.x);
+	mvhline(
+		editorWindow.position.y, editorWindow.position.x, ' ', editorWindow.size.x
+	);
 	move(editorWindow.position.y, editorWindow.position.x);
 	addstr(editorWindow.editors[editorWindow.tabIndex].title.c_str());
 
@@ -70,7 +82,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 	++i) {
 		move((editorWindow.position.y + i + maximised) - editor.scroll.y, editorWindow.position.x);
 		for (size_t j = editor.scroll.x;
-			(j - editor.scroll.x <= editor.fileBuffer[i].length()) &&
+			(j <= editor.fileBuffer[i].length()) &&
 			(j - editor.scroll.x < editorWindow.size.x);
 		++j) {
 			if ((i == editor.cursorPosition.y) && (j == editor.cursorPosition.x)) {

@@ -19,7 +19,7 @@ g++ src/*.cc -lncurses -Wall -Wextra -Werror -pedantic -o noro
 ```
 
 ## known bugs
-crashes when scrolling horizontally
+none B)
 
 ## screenshots
 <img src="/pic/noro.png">

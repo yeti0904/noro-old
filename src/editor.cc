@@ -17,7 +17,7 @@ Editor::Editor(std::string fname) {
 }
 
 void Editor::HandleInput(input_t input) {
-	bool moved;
+	bool moved = false;
 	switch (input) {
 		case 0: {
 			return;
@@ -26,7 +26,10 @@ void Editor::HandleInput(input_t input) {
 		case '\n': {
 			// insert if the cursor isnt at the end of the line
 			if (cursorPosition.x < fileBuffer[cursorPosition.y].length() + 1) {
-				fileBuffer.insert(fileBuffer.begin() + cursorPosition.y + 1, fileBuffer[cursorPosition.y].substr(cursorPosition.x));
+				fileBuffer.insert(
+					fileBuffer.begin() + cursorPosition.y + 1,
+					fileBuffer[cursorPosition.y].substr(cursorPosition.x)
+				);
 				fileBuffer[cursorPosition.y].erase(cursorPosition.x);
 			}
 			else {
@@ -109,7 +112,9 @@ void Editor::HandleInput(input_t input) {
 				if (saved) {
 					title = "Editor (" + fileName + ") +";
 				}
-				fileBuffer[cursorPosition.y].insert(cursorPosition.x, std::string(1, input));
+				fileBuffer[cursorPosition.y].insert(
+					cursorPosition.x, std::string(1, input)
+				);
 				++ cursorPosition.x;
 				saved = false;
 				moved = true;
@@ -159,7 +164,8 @@ void Editor::SaveFile() {
 	for (size_t i = 0; i < fileBuffer.size(); ++i) {
 		fileBufferString += fileBuffer[i] + '\n';
 	}
-	fileBufferString.erase(fileBufferString.length() - 1); // the last newline doesnt need to be there
+	fileBufferString.erase(fileBufferString.length() - 1);
+	// the last newline doesnt need to be there
 
 	FS::File::Write(fileName, fileBufferString);
 
