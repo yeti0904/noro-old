@@ -135,9 +135,9 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 			attron(COLOR_PAIR(COLOUR_PAIR_ACTIVETAB));
 		}
 		for (size_t j = 0; 
-			j < editorWindow.GetCurrentEditor().fileName.length();
+			j < editorWindow.editors[i].fileName.length();
 		++j) {
-			addch(editorWindow.GetCurrentEditor().fileName[j]);
+			addch(editorWindow.editors[i].fileName[j]);
 			++ x;
 			if (x > editorWindow.size.x) {
 				goto endTabBarRendering;
