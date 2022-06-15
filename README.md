@@ -22,7 +22,7 @@ g++ src/*.cc -lncurses -Wall -Wextra -Werror -pedantic -o noro
 none B)
 
 ## screenshots
-<img src="/pic/noro.png">
+<img src="/pic/noro2.png">
 
 ## keys
 | Key        | Action                     |
