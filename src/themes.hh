@@ -11,6 +11,8 @@ class Theme {
 		ColourPair editor;
 		ColourPair titlebar;
 		ColourPair alert;
+		ColourPair tabs;
+		ColourPair activeTab;
 
 		// functions
 		Theme();

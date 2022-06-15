@@ -54,8 +54,6 @@ void Renderers::Noro::Global(App& app) {
 }
 
 void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
-	uint8_t maximised = editorWindow.maximised? 0 : 1;
-
 	attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 
 	// render titlebar
@@ -72,15 +70,15 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 	// render editor
 	Editor editor = editorWindow.editors[editorWindow.tabIndex];
 	
-	for (size_t i = editorWindow.position.y + maximised; i < editorWindow.size.y; ++i) {
+	for (size_t i = editorWindow.position.y; i < editorWindow.size.y; ++i) {
 		mvhline(i, editorWindow.position.x, ' ', editorWindow.size.x);
 	}
 
 	for (size_t i = editor.scroll.y; 
-		(i - editor.scroll.y < (editorWindow.size.y - maximised - 1)) &&
+		(i - editor.scroll.y < (editorWindow.size.y - 2)) &&
 		(i < editor.fileBuffer.size());
 	++i) {
-		move((editorWindow.position.y + i + maximised) - editor.scroll.y, editorWindow.position.x);
+		move((editorWindow.position.y + i) - editor.scroll.y, editorWindow.position.x);
 		for (size_t j = editor.scroll.x;
 			(j <= editor.fileBuffer[i].length()) &&
 			(j - editor.scroll.x < editorWindow.size.x);
@@ -117,5 +115,41 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 	}
 
 	attroff(COLOR_PAIR(COLOUR_PAIR_EDITOR));
-	
+
+	// render tab bar
+	attron(COLOR_PAIR(COLOUR_PAIR_TABS));
+	mvhline(
+		editorWindow.position.y + editorWindow.size.y - 2,
+		editorWindow.position.x,
+		' ', editorWindow.size.x
+	);
+	move(
+		editorWindow.position.y + editorWindow.size.y - 2,
+		editorWindow.position.x
+	);
+	size_t x = 0;
+	for (size_t i = 0; i < editorWindow.editors.size(); ++i) {
+		// check if this tab is the tab that is in use
+		if (i == editorWindow.tabIndex) {
+			attroff(COLOR_PAIR(COLOUR_PAIR_TABS));
+			attron(COLOR_PAIR(COLOUR_PAIR_ACTIVETAB));
+		}
+		for (size_t j = 0; 
+			j < editorWindow.GetCurrentEditor().fileName.length();
+		++j) {
+			addch(editorWindow.GetCurrentEditor().fileName[j]);
+			++ x;
+			if (x > editorWindow.size.x) {
+				goto endTabBarRendering;
+			}
+		}
+		if (i == editorWindow.tabIndex) {
+			attroff(COLOR_PAIR(COLOUR_PAIR_ACTIVETAB));
+			attron(COLOR_PAIR(COLOUR_PAIR_TABS));
+		}
+		++ x;
+		addch(' ');
+	}
+	endTabBarRendering:
+		attroff(COLOR_PAIR(COLOUR_PAIR_TABS));
 }

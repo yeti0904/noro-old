@@ -71,8 +71,29 @@ App::App(int argc, char** argv) {
 			"titlebarFG = black\n"
 			"titlebarBG = white\n"
 			"alertFG = black\n"
-			"alertBG = green"
+			"alertBG = green\n"
+			"tabFG = black\n"
+			"tabBG = cyan\n"
+			"activeTabFG = cyan\n"
+			"activeTabBG = black"
 		);
+		
+	}
+	if (!FS::File::Exists(home + "/.config/noro/themes/dark.ini")) {
+		FS::File::Write(home + "/.config/noro/themes/dark.ini",
+			"# dark theme\n"
+			"editorFG = white\n"
+			"editorBG = black\n"
+			"titlebarFG = black\n"
+			"titlebarBG = cyan\n"
+			"alertFG = black\n"
+			"alertBG = green\n"
+			"tabFG = black\n"
+			"tabBG = green\n"
+			"activeTabFG = green\n"
+			"activeTabBG = black"
+		);
+		
 	}
 
 	// set up config
@@ -195,11 +216,38 @@ void App::Update() {
 				textbox.completionCallback = TextboxEvents::Open;
 				break;
 			}
-			case CTRL('f'): {
+			case CTRL('f'): { // find
 				textbox.CenterOnScreen();
 				textboxFocused = true;
 				textbox.Init("Find", "Type the text you want to find");
 				textbox.completionCallback = TextboxEvents::Find;
+				break;
+			}
+			case KEY_NPAGE: { // next tab
+				if (editorWindow.tabIndex <= editorWindow.editors.size()) {
+					++ editorWindow.tabIndex;
+				}
+				break;
+			}
+			case KEY_PPAGE: { // previous tab
+				if (editorWindow.tabIndex > 0) {
+					-- editorWindow.tabIndex;
+				}
+				break;
+			}
+			case CTRL('n'): { // new tab
+				editorWindow.editors.push_back(Editor());
+				editorWindow.editors.back().parent = &editorWindow;
+				break;
+			}
+			case CTRL('w'): { // close tab
+				if (editorWindow.editors.size() == 0) {
+					run = false;
+					return;
+				}
+				editorWindow.editors.erase(editorWindow.editors.begin() +
+					editorWindow.tabIndex
+				);
 				break;
 			}
 			default: {
