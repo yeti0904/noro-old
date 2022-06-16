@@ -151,9 +151,11 @@ void Editor::OpenFile(std::string fname) {
 		exit(1);
 	}
 	// fileName   = Util::StringReplaceAll(fname, "~", home);
-	fileName   = fname;
-	fileBuffer = FS::File::ReadIntoVector(fileName);
-	title      = "Editor (" + fileName + ")";
+	fileName       = fname;
+	fileBuffer     = FS::File::ReadIntoVector(fileName);
+	title          = "Editor (" + fileName + ")";
+	cursorPosition = {0, 0};
+	scroll         = {0, 0};
 	if (fileBuffer.size() == 0) {
 		fileBuffer = {""};
 	}

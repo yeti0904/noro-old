@@ -17,13 +17,16 @@ void TextboxEvents::SaveAs(Textbox& textbox) {
 
 void TextboxEvents::Open(Textbox& textbox) {
 	// this will probably suck too (i havent written it yet)
-	(*app).editorWindow.editors[(*app).editorWindow.tabIndex].OpenFile(textbox.userInput);
+	(*app).editorWindow.GetCurrentEditor().OpenFile(textbox.userInput);
 	(*app).alert.NewAlert("Opened " + textbox.userInput, ALERT_TIMER);
 	// ok it does
 }
 
 void TextboxEvents::Find(Textbox& textbox) {
-	for (size_t i = (*app).editorWindow.GetCurrentEditor().cursorPosition.y; i < (*app).editorWindow.GetCurrentEditor().fileBuffer.size(); ++i) {
+	for (size_t i = 
+		(*app).editorWindow.GetCurrentEditor().cursorPosition.y;
+		i < (*app).editorWindow.GetCurrentEditor().fileBuffer.size();
+	++i) {
 		std::string line = (*app).editorWindow.GetCurrentEditor().fileBuffer[i];
 		if (line.find(textbox.userInput) != std::string::npos) {
 			(*app).alert.NewAlert("Found text", ALERT_TIMER);
