@@ -33,6 +33,10 @@ none B)
 | Ctrl + D   | Save as                    |
 | Ctrl + O   | Open                       |
 | Ctrl + F   | Find                       |
+| Ctrl + N   | New tab                    |
+| Ctrl + W   | Close tab                  |
+| Page down  | next tab                   |
+| Page up    | previous tab               |
 
 ## features
 ### textbox history
