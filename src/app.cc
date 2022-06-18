@@ -4,7 +4,7 @@
 #include "render.hh"
 #include "fs.hh"
 #include "terminal.hh"
-#include "textboxEvents.hh"
+#include "inputEvents.hh"
 #include "util.hh"
 
 App::App(int argc, char** argv) {
@@ -12,7 +12,7 @@ App::App(int argc, char** argv) {
 	run            = true;
 	wasInit        = false;
 	textboxFocused = false;
-	textbox.size.x = 40;
+	textbox.size.x = 30;
 	textbox.size.y = 5;
 	FPSLimit       = 60;
 	config.tabSize = 4;
@@ -40,6 +40,164 @@ App::App(int argc, char** argv) {
 		}
 	}
 
+	UpdateConfig();
+	
+	InputEvents::Init(*this);
+	wasInit = true;
+}
+
+void App::Update() {
+	// update editor windows' dimensions
+	if (editorWindow.maximised) {
+		editorWindow.position = {0, 1};
+		editorWindow.size = {(size_t)COLS, (size_t)LINES - 1};
+		// editorWindow.position = {3, 3};
+		// editorWindow.size = {20, 10};
+	}
+
+	// input
+	input_t input = getch();
+
+	if (textboxFocused) {
+		textbox.HandleInput(input);
+		if (textbox.complete) {
+			textboxFocused = false;
+		}
+	}
+	else {
+		switch (input) {
+			case CTRL('q'): { // quit
+				run = false;
+				break;
+			}
+			/*
+			dead feature lies here
+			case CTRL('e'): { // maximise/minimise
+				editorWindow.maximised = !editorWindow.maximised;
+
+				if (!editorWindow.maximised) {
+					editorWindow.position = {1, 2};
+					editorWindow.size     = {(size_t)COLS - 2, (size_t)LINES - 2};
+				}
+				
+				break;
+			}
+			*/
+			case CTRL('t'): { // suspend to terminal
+				Terminal::Run();
+				break;
+			}
+			case CTRL('d'): { // save as
+				textbox.CenterOnScreen();
+				textboxFocused = true;
+				textbox.Init("Save As", "Type a filename to save the file as");
+				textbox.completionCallback = InputEvents::SaveAs;
+				textbox.inputType          = InputType::Text;
+				break;
+			}
+			case CTRL('s'): { // save
+				editorWindow.editors[editorWindow.tabIndex].SaveFile();
+				alert.NewAlert("Saved " +
+					editorWindow.editors[editorWindow.tabIndex].fileName, 
+					ALERT_TIMER
+				);
+				break;
+			}
+			case CTRL('o'): { // open
+				textbox.CenterOnScreen();
+				textboxFocused = true;
+				textbox.Init("Open", "Type a filename to open");
+				textbox.completionCallback = InputEvents::Open;
+				textbox.inputType          = InputType::Text;
+				break;
+			}
+			case CTRL('f'): { // find
+				textbox.CenterOnScreen();
+				textboxFocused = true;
+				textbox.Init("Find", "Type the text you want to find");
+				textbox.completionCallback = InputEvents::Find;
+				textbox.inputType          = InputType::Text;
+				break;
+			}
+			case KEY_NPAGE: { // next tab
+				if (editorWindow.tabIndex <= editorWindow.editors.size()) {
+					++ editorWindow.tabIndex;
+				}
+				break;
+			}
+			case KEY_PPAGE: { // previous tab
+				if (editorWindow.tabIndex > 0) {
+					-- editorWindow.tabIndex;
+				}
+				break;
+			}
+			case CTRL('n'): { // new tab
+				editorWindow.editors.push_back(Editor());
+				editorWindow.editors.back().parent = &editorWindow;
+				break;
+			}
+			case CTRL('w'): { // close tab
+				if (editorWindow.editors.size() == 0) {
+					run = false;
+					return;
+				}
+				editorWindow.editors.erase(editorWindow.editors.begin() +
+					editorWindow.tabIndex
+				);
+				break;
+			}
+			case CTRL('y'): { // settings
+				textbox.CenterOnScreen();
+				textboxFocused = true;
+				textbox.Init("Settings", "");
+				textbox.completionCallback = InputEvents::Settings;
+				textbox.inputType          = InputType::Selection;
+				textbox.buttons            = {
+					"Change theme",
+					"Change tab size"
+				};
+				break;
+			}
+			case CTRL('r'): { // reload
+				IOHandle::Quit();
+				UpdateConfig();
+				alert.NewAlert("Reloaded", ALERT_TIMER);
+				break;
+			}
+			default: {
+				editorWindow.editors[editorWindow.tabIndex].HandleInput(input);
+				break;
+			}
+		}
+	}
+
+	if (alert.active) {
+		alert.UpdateTimer(1000/FPSLimit);
+	}
+
+	Render();
+	usleep(1000000/FPSLimit);
+}
+
+void App::Render() {
+	Renderers::Noro::Global(*this);
+	Renderers::Noro::RenderEditorWindow(editorWindow);
+	if (alert.active) {
+		alert.Render();
+	}
+	if (textboxFocused) {
+		textbox.Render();
+	}
+	refresh();
+}
+
+App::~App() {
+	if (wasInit) {
+		IOHandle::Quit();
+	}
+}
+
+void App::UpdateConfig() {
 	// create files/folders in .config
 	const char* homeraw = getenv("HOME");
 	if (homeraw == nullptr) {
@@ -93,7 +251,21 @@ App::App(int argc, char** argv) {
 			"activeTabFG = green\n"
 			"activeTabBG = black"
 		);
-		
+	}
+	if (!FS::File::Exists(home + "/.config/noro/themes/mono.ini")) {
+		FS::File::Write(home + "/.config/noro/themes/mono.ini",
+			"# dark theme\n"
+			"editorFG = white\n"
+			"editorBG = black\n"
+			"titlebarFG = black\n"
+			"titlebarBG = white\n"
+			"alertFG = black\n"
+			"alertBG = white\n"
+			"tabFG = black\n"
+			"tabBG = white\n"
+			"activeTabFG = white\n"
+			"activeTabBG = black"
+		);
 	}
 
 	// set up config
@@ -151,134 +323,19 @@ App::App(int argc, char** argv) {
 	// call init functions
 	IOHandle::Init();
 	IOHandle::InitColours(theme);
+}
+
+void App::SaveConfig() {
+	const char* homeraw = getenv("HOME");
+	if (homeraw == nullptr) {
+		alert.NewAlert("Failed to get home folder", ALERT_TIMER);
+		return;
+	}
+	std::string home = homeraw;
 	
-	TextboxEvents::Init(*this);
-	wasInit = true;
-}
-
-void App::Update() {
-	// update editor windows' dimensions
-	if (editorWindow.maximised) {
-		editorWindow.position = {0, 1};
-		editorWindow.size = {(size_t)COLS, (size_t)LINES - 1};
-		// editorWindow.position = {3, 3};
-		// editorWindow.size = {20, 10};
-	}
-
-	// input
-	input_t input = getch();
-
-	if (textboxFocused) {
-		textbox.HandleInput(input);
-		if (textbox.complete) {
-			textboxFocused = false;
-		}
-	}
-	else {
-		switch (input) {
-			case CTRL('q'): { // quit
-				run = false;
-				break;
-			}
-			/*
-			dead feature lies here
-			case CTRL('e'): { // maximise/minimise
-				editorWindow.maximised = !editorWindow.maximised;
-
-				if (!editorWindow.maximised) {
-					editorWindow.position = {1, 2};
-					editorWindow.size     = {(size_t)COLS - 2, (size_t)LINES - 2};
-				}
-				
-				break;
-			}
-			*/
-			case CTRL('t'): { // suspend to terminal
-				Terminal::Run();
-				break;
-			}
-			case CTRL('d'): { // save as
-				textbox.CenterOnScreen();
-				textboxFocused = true;
-				textbox.Init("Save As", "Type a filename to save the file as");
-				textbox.completionCallback = TextboxEvents::SaveAs;
-				break;
-			}
-			case CTRL('s'): { // save
-				editorWindow.editors[editorWindow.tabIndex].SaveFile();
-				alert.NewAlert("Saved " + editorWindow.editors[editorWindow.tabIndex].fileName, ALERT_TIMER);
-				break;
-			}
-			case CTRL('o'): { // open
-				textbox.CenterOnScreen();
-				textboxFocused = true;
-				textbox.Init("Open", "Type a filename to open");
-				textbox.completionCallback = TextboxEvents::Open;
-				break;
-			}
-			case CTRL('f'): { // find
-				textbox.CenterOnScreen();
-				textboxFocused = true;
-				textbox.Init("Find", "Type the text you want to find");
-				textbox.completionCallback = TextboxEvents::Find;
-				break;
-			}
-			case KEY_NPAGE: { // next tab
-				if (editorWindow.tabIndex <= editorWindow.editors.size()) {
-					++ editorWindow.tabIndex;
-				}
-				break;
-			}
-			case KEY_PPAGE: { // previous tab
-				if (editorWindow.tabIndex > 0) {
-					-- editorWindow.tabIndex;
-				}
-				break;
-			}
-			case CTRL('n'): { // new tab
-				editorWindow.editors.push_back(Editor());
-				editorWindow.editors.back().parent = &editorWindow;
-				break;
-			}
-			case CTRL('w'): { // close tab
-				if (editorWindow.editors.size() == 0) {
-					run = false;
-					return;
-				}
-				editorWindow.editors.erase(editorWindow.editors.begin() +
-					editorWindow.tabIndex
-				);
-				break;
-			}
-			default: {
-				editorWindow.editors[editorWindow.tabIndex].HandleInput(input);
-				break;
-			}
-		}
-	}
-
-	if (alert.active) {
-		alert.UpdateTimer(1000/FPSLimit);
-	}
-
-	Render();
-	usleep(1000000/FPSLimit);
-}
-
-void App::Render() {
-	Renderers::Noro::Global(*this);
-	Renderers::Noro::RenderEditorWindow(editorWindow);
-	if (textboxFocused) {
-		textbox.Render();
-	}
-	if (alert.active) {
-		alert.Render();
-	}
-	refresh();
-}
-
-App::~App() {
-	if (wasInit) {
-		IOHandle::Quit();
-	}
+	FS::File::Write(home + "/.config/noro/settings.ini",
+		"# noro properties\n"
+		"theme = " + settings[INI::DefaultSection]["theme"] +
+		"\ntabSize = " + settings[INI::DefaultSection]["tabSize"]
+	);
 }

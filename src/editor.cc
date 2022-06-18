@@ -1,6 +1,6 @@
 #include "editor.hh"
 #include "fs.hh"
-#include "textboxEvents.hh"
+#include "inputEvents.hh"
 #include "util.hh"
 #include "iohandle.hh"
 
@@ -62,13 +62,13 @@ void Editor::HandleInput(input_t input) {
 			}
 			else if (cursorPosition.y > 0) {
 				-- cursorPosition.y;
-				cursorPosition.x = 0;
+				cursorPosition.x = fileBuffer[cursorPosition.y].size();
 				moved = true;
 			}
 			break;
 		}
 		case KEY_RIGHT: {
-			if (cursorPosition.x < fileBuffer[cursorPosition.y].length() + 1) {
+			if (cursorPosition.x < fileBuffer[cursorPosition.y].length()) {
 				++ cursorPosition.x;
 				moved = true;
 			}
