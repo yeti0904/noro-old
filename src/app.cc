@@ -137,13 +137,13 @@ void App::Update() {
 				break;
 			}
 			case CTRL('w'): { // close tab
+				editorWindow.editors.erase(editorWindow.editors.begin() +
+					editorWindow.tabIndex
+				);
 				if (editorWindow.editors.size() == 0) {
 					run = false;
 					return;
 				}
-				editorWindow.editors.erase(editorWindow.editors.begin() +
-					editorWindow.tabIndex
-				);
 				break;
 			}
 			case CTRL('y'): { // settings
@@ -213,6 +213,9 @@ void App::UpdateConfig() {
 	}
 	if (!FS::Directory::Exists(home + "/.config/noro/themes")) {
 		FS::Directory::Create(home + "/.config/noro/themes");
+	}
+	if (!FS::Directory::Exists(home + "/.config/noro/recordings")) {
+		FS::Directory::Create(home + "/.config/noro/recordings");
 	}
 	if (!FS::File::Exists(home + "/.config/noro/settings.ini")) {
 		FS::File::Write(home + "/.config/noro/settings.ini",
