@@ -20,6 +20,10 @@ class App {
 		AppConfig                 config;
 		INI::Structure <char>     settings;
 		Theme                     theme;
+		std::vector <input_t>     recordingData;
+		bool                      isRecording;
+		bool                      recordingPlayingBack;
+		size_t                    recordingPlaybackIndex;
 		
 		// functions
 		App(int argc, char** argv);
@@ -30,4 +34,6 @@ class App {
 		// util functions
 		void UpdateConfig();
 		void SaveConfig();
+		void SaveRecording(std::string name);
+		void PlayRecording(std::string name);
 };

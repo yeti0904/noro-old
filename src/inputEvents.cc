@@ -82,3 +82,55 @@ void InputEvents::ChangeTabSize(InputWindow& textbox) {
 	app->UpdateConfig();
 	app->alert.NewAlert("Changed tab size to " + textbox.userInput, ALERT_TIMER);
 }
+
+void InputEvents::Recording(InputWindow& textbox) {
+	if (textbox.userInput == "New recording") {
+		if (!app->recordingPlayingBack) {
+			app->isRecording = true;
+			app->alert.NewAlert("Started recording", ALERT_TIMER);
+		}
+	}
+	else if (textbox.userInput == "Stop recording/playback") {
+		if (app->isRecording) {
+			textbox.resetVars = false;
+			textbox.ResetVariables();
+			textbox.title              = "Type recording name";
+			textbox.content            = "Save recording as:";
+			textbox.inputType          = InputType::Text;
+			textbox.completionCallback = InputEvents::SaveRecording;
+			textbox.complete           = false;
+		}
+		else if (app->recordingPlayingBack) {
+			app->alert.NewAlert("Recording ended", ALERT_TIMER);
+		}
+		else {
+			app->alert.NewAlert("Not recording/playing anything", ALERT_TIMER);
+		}
+	}
+	else if (textbox.userInput == "Play recording") {
+		if (app->isRecording || app->recordingPlayingBack) {
+			return;
+		}
+		textbox.resetVars = false;
+		textbox.ResetVariables();
+		textbox.title              = "Type recording name";
+		textbox.content            = "Play recording:";
+		textbox.inputType          = InputType::Text;
+		textbox.completionCallback = InputEvents::PlayRecording;
+		textbox.complete           = false;
+	}
+}
+
+void InputEvents::SaveRecording(InputWindow& textbox) {
+	if (textbox.userInput[0] == '/') {
+		app->alert.NewAlert("Can only save recordings to ~/.config/noro/recordings",
+			ALERT_TIMER
+		);
+		return;
+	}
+	app->SaveRecording(textbox.userInput);
+}
+
+void InputEvents::PlayRecording(InputWindow& textbox) {
+	app->PlayRecording(textbox.userInput);
+}

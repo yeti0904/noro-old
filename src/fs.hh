@@ -1,5 +1,6 @@
 #pragma once
 #include "_components.hh"
+#include "pointer.hh"
 
 namespace FS {
 	namespace File {
@@ -8,6 +9,11 @@ namespace FS {
 		bool                      Exists(std::string fname);
 		void                      Create(std::string fname);
 		void                      Write(std::string fname, std::string write);
+		namespace Binary {
+			size_t           GetSize(std::string fname);
+			AllocatedPointer Read(std::string fname);
+			void             Write(std::string fname, void* content, size_t size);
+		}
 	}
 	namespace Directory {
 		bool Exists(std::string dname);

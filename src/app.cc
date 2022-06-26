@@ -9,13 +9,16 @@
 
 App::App(int argc, char** argv) {
 	// set variables
-	run            = true;
-	wasInit        = false;
-	textboxFocused = false;
-	textbox.size.x = 30;
-	textbox.size.y = 5;
-	FPSLimit       = 60;
-	config.tabSize = 4;
+	run                    = true;
+	wasInit                = false;
+	textboxFocused         = false;
+	textbox.size.x         = 30;
+	textbox.size.y         = 5;
+	FPSLimit               = 60;
+	isRecording            = false;
+	recordingPlayingBack   = false;
+	config.tabSize         = 4;
+	recordingPlaybackIndex = 0;
 	for (int i = 0; i < argc; ++i) {
 		args.push_back(argv[i]);
 	}
@@ -56,7 +59,21 @@ void App::Update() {
 	}
 
 	// input
-	input_t input = getch();
+	input_t input;
+	if (isRecording) {
+		input = getch();
+		recordingData.push_back(input);
+	}
+	else if (recordingPlayingBack) {
+		input = recordingData[recordingPlaybackIndex];
+		++ recordingPlaybackIndex;
+		if (recordingPlaybackIndex >= recordingData.size()) {
+			recordingPlayingBack = false;
+		}
+	}
+	else {
+		input = getch();
+	}
 
 	if (textboxFocused) {
 		textbox.HandleInput(input);
@@ -84,7 +101,9 @@ void App::Update() {
 			}
 			*/
 			case CTRL('t'): { // suspend to terminal
-				Terminal::Run();
+				if (!recordingPlayingBack) {
+					Terminal::Run();
+				}
 				break;
 			}
 			case CTRL('d'): { // save as
@@ -120,7 +139,7 @@ void App::Update() {
 				break;
 			}
 			case KEY_NPAGE: { // next tab
-				if (editorWindow.tabIndex <= editorWindow.editors.size()) {
+				if (editorWindow.tabIndex < editorWindow.editors.size() - 1) {
 					++ editorWindow.tabIndex;
 				}
 				break;
@@ -162,6 +181,19 @@ void App::Update() {
 				IOHandle::Quit();
 				UpdateConfig();
 				alert.NewAlert("Reloaded", ALERT_TIMER);
+				break;
+			}
+			case CTRL('p'): { // record (movie)
+				textbox.CenterOnScreen();
+				textboxFocused = true;
+				textbox.Init("Recording", "");
+				textbox.completionCallback = InputEvents::Recording;
+				textbox.inputType          = InputType::Selection;
+				textbox.buttons            = {
+					"New recording",
+					"Stop recording/playback",
+					"Play recording"
+				};
 				break;
 			}
 			default: {
@@ -341,4 +373,52 @@ void App::SaveConfig() {
 		"theme = " + settings[INI::DefaultSection]["theme"] +
 		"\ntabSize = " + settings[INI::DefaultSection]["tabSize"]
 	);
+}
+
+void App::SaveRecording(std::string name) {
+	const char* homeraw = getenv("HOME");
+	if (homeraw == nullptr) {
+		alert.NewAlert("Failed to get home folder", ALERT_TIMER);
+		return;
+	}
+	std::string home = homeraw;
+
+	FS::File::Binary::Write(home + "/.config/noro/recordings/" + name,
+		recordingData.data(), recordingData.size()
+	);
+
+	alert.NewAlert("Saved recording as " + name, ALERT_TIMER);
+}
+
+void App::PlayRecording(std::string name) {
+	const char* homeraw = getenv("HOME");
+	if (homeraw == nullptr) {
+		alert.NewAlert("Failed to get home folder", ALERT_TIMER);
+		return;
+	}
+	std::string home = homeraw;
+
+	if (!FS::File::Exists(home + "/.config/noro/recordings/" + name)) {
+		alert.NewAlert("No such recording exists", ALERT_TIMER);
+		return;
+	}
+
+	AllocatedPointer recording = FS::File::Binary::Read(
+		home + "/.config/noro/recordings/" + name
+	);
+
+	if (recording.size % 2 != 0) {
+		alert.NewAlert("Invalid recording", ALERT_TIMER);
+		return;
+	}
+
+	uint16_t* data = (uint16_t*) recording.ptr;
+	
+	recordingData.clear();
+	recordingPlaybackIndex = 0;
+
+	for (size_t i = 0; i < recording.size / 2; ++i) {
+		recordingData.push_back(data[i]);
+	}
+	recordingPlayingBack = true;
 }
