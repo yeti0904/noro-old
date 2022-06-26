@@ -54,39 +54,42 @@ void FS::File::Write(std::string fname, std::string write) {
 	fhnd.close();
 }
 
-// Binary file functions
+// Binary functions
+std::vector <uint8_t> FS::File::Binary::Read(std::string fname) {
+	std::vector <uint8_t> ret;
+	size_t                size = GetSize(fname);
+
+	ret.resize(size);
+	uint8_t* data = (uint8_t*) malloc(size);
+
+	std::ifstream fhnd(fname, std::ios::in | std::ios::binary);
+	fhnd.read((char*)data, size);
+	fhnd.close();
+
+	ret.assign(data, data + size);
+
+	return ret;
+}
+
+void FS::File::Binary::Write(std::string fname, std::vector <uint8_t> data) {
+	std::ofstream fhnd(fname, std::ios::out | std::ios::binary);
+
+	fhnd.write((char*) data.data(), data.size());
+
+	fhnd.close();
+}
+
 size_t FS::File::Binary::GetSize(std::string fname) {
 	struct stat results;
 
 	if (stat(fname.c_str(), &results) == 0) {
 		return results.st_size;
 	}
-	else {
-		IOHandle::Quit();
-		perror("[ERROR] Error while calling stat()");
-		exit(1);
-	}
-}
 
-AllocatedPointer FS::File::Binary::Read(std::string fname) {
-	std::ifstream    fhnd(fname, std::ios::binary);
-	AllocatedPointer ret;
-
-	ret.Alloc(GetSize(fname) + 1);
-
-	fhnd.read((char*) ret.ptr, ret.size);
-
-	fhnd.close();
-
-	return ret;
-}
-
-void FS::File::Binary::Write(std::string fname, void* content, size_t size) {
-	std::ofstream fhnd(fname, std::ios::binary);
-
-	fhnd.write((const char*) content, size);
-
-	fhnd.close();
+	IOHandle::Quit();
+	fprintf(stderr, "[ERROR] failed to get size of file %s", fname.c_str());
+	exit(1);
+	return 0;
 }
 
 // Directory functions

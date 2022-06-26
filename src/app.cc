@@ -9,16 +9,17 @@
 
 App::App(int argc, char** argv) {
 	// set variables
-	run                    = true;
-	wasInit                = false;
-	textboxFocused         = false;
-	textbox.size.x         = 30;
-	textbox.size.y         = 5;
-	FPSLimit               = 60;
-	isRecording            = false;
-	recordingPlayingBack   = false;
-	config.tabSize         = 4;
-	recordingPlaybackIndex = 0;
+	run              = true;
+	wasInit          = false;
+	textboxFocused   = false;
+	textbox.size.x   = 30;
+	textbox.size.y   = 5;
+	FPSLimit         = 60;
+	config.tabSize   = 4;
+	isRecording      = false;
+	isPlayingBack    = false;
+	playBackIterator = 0;
+	
 	for (int i = 0; i < argc; ++i) {
 		args.push_back(argv[i]);
 	}
@@ -35,7 +36,9 @@ App::App(int argc, char** argv) {
 			}
 			else {
 				if (!FS::File::Exists(args[i])) {
-					fprintf(stderr, "[ERROR] %s file doesnt exist\n", args[i].c_str());
+					fprintf(stderr, "[ERROR] %s file doesnt exist\n",
+						args[i].c_str()
+					);
 					exit(1);
 				}
 				editorWindow.editors[editorWindow.tabIndex].OpenFile(args[i]);
@@ -60,19 +63,19 @@ void App::Update() {
 
 	// input
 	input_t input;
-	if (isRecording) {
-		input = getch();
-		recordingData.push_back(input);
-	}
-	else if (recordingPlayingBack) {
-		input = recordingData[recordingPlaybackIndex];
-		++ recordingPlaybackIndex;
-		if (recordingPlaybackIndex >= recordingData.size()) {
-			recordingPlayingBack = false;
+	if (isPlayingBack) {
+		input = recordingData[playBackIterator];
+		++ playBackIterator;
+		if (playBackIterator >= recordingData.size()) {
+			isPlayingBack = false;
+			alert.NewAlert("Finished playing back", ALERT_TIMER);
 		}
 	}
 	else {
 		input = getch();
+		if (isRecording) {
+			recordingData.push_back(input);
+		}
 	}
 
 	if (textboxFocused) {
@@ -101,7 +104,7 @@ void App::Update() {
 			}
 			*/
 			case CTRL('t'): { // suspend to terminal
-				if (!recordingPlayingBack) {
+				if (!isPlayingBack) {
 					Terminal::Run();
 				}
 				break;
@@ -133,7 +136,7 @@ void App::Update() {
 			case CTRL('f'): { // find
 				textbox.CenterOnScreen();
 				textboxFocused = true;
-				textbox.Init("Find", "Type the text you want to find");
+				textbox.Init("Find", "Type the text you want to\nfind");
 				textbox.completionCallback = InputEvents::Find;
 				textbox.inputType          = InputType::Text;
 				break;
@@ -156,18 +159,18 @@ void App::Update() {
 				break;
 			}
 			case CTRL('w'): { // close tab
+				editorWindow.editors.erase(editorWindow.editors.begin() +
+					editorWindow.tabIndex
+				);
 				if (editorWindow.editors.size() == 0) {
 					run = false;
 					return;
 				}
-				editorWindow.editors.erase(editorWindow.editors.begin() +
-					editorWindow.tabIndex
-				);
 				break;
 			}
 			case CTRL('y'): { // settings
-				textbox.CenterOnScreen();
 				textboxFocused = true;
+				textbox.CenterOnScreen();
 				textbox.Init("Settings", "");
 				textbox.completionCallback = InputEvents::Settings;
 				textbox.inputType          = InputType::Selection;
@@ -183,14 +186,15 @@ void App::Update() {
 				alert.NewAlert("Reloaded", ALERT_TIMER);
 				break;
 			}
-			case CTRL('p'): { // record (movie)
-				textbox.CenterOnScreen();
+			case CTRL('p'): { // recording menu
+				break; // disabled for now
 				textboxFocused = true;
+				textbox.CenterOnScreen();
 				textbox.Init("Recording", "");
-				textbox.completionCallback = InputEvents::Recording;
+				textbox.completionCallback = InputEvents::RecordingMenu;
 				textbox.inputType          = InputType::Selection;
 				textbox.buttons            = {
-					"New recording",
+					"Start recording",
 					"Stop recording/playback",
 					"Play recording"
 				};
@@ -245,6 +249,9 @@ void App::UpdateConfig() {
 	}
 	if (!FS::Directory::Exists(home + "/.config/noro/themes")) {
 		FS::Directory::Create(home + "/.config/noro/themes");
+	}
+	if (!FS::Directory::Exists(home + "/.config/noro/recordings")) {
+		FS::Directory::Create(home + "/.config/noro/recordings");
 	}
 	if (!FS::File::Exists(home + "/.config/noro/settings.ini")) {
 		FS::File::Write(home + "/.config/noro/settings.ini",
@@ -370,52 +377,4 @@ void App::SaveConfig() {
 		"theme = " + settings[INI::DefaultSection]["theme"] +
 		"\ntabSize = " + settings[INI::DefaultSection]["tabSize"]
 	);
-}
-
-void App::SaveRecording(std::string name) {
-	const char* homeraw = getenv("HOME");
-	if (homeraw == nullptr) {
-		alert.NewAlert("Failed to get home folder", ALERT_TIMER);
-		return;
-	}
-	std::string home = homeraw;
-
-	FS::File::Binary::Write(home + "/.config/noro/recordings/" + name,
-		recordingData.data(), recordingData.size()
-	);
-
-	alert.NewAlert("Saved recording as " + name, ALERT_TIMER);
-}
-
-void App::PlayRecording(std::string name) {
-	const char* homeraw = getenv("HOME");
-	if (homeraw == nullptr) {
-		alert.NewAlert("Failed to get home folder", ALERT_TIMER);
-		return;
-	}
-	std::string home = homeraw;
-
-	if (!FS::File::Exists(home + "/.config/noro/recordings/" + name)) {
-		alert.NewAlert("No such recording exists", ALERT_TIMER);
-		return;
-	}
-
-	AllocatedPointer recording = FS::File::Binary::Read(
-		home + "/.config/noro/recordings/" + name
-	);
-
-	if (recording.size % 2 != 0) {
-		alert.NewAlert("Invalid recording", ALERT_TIMER);
-		return;
-	}
-
-	uint16_t* data = (uint16_t*) recording.ptr;
-	
-	recordingData.clear();
-	recordingPlaybackIndex = 0;
-
-	for (size_t i = 0; i < recording.size / 2; ++i) {
-		recordingData.push_back(data[i]);
-	}
-	recordingPlayingBack = true;
 }

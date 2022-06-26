@@ -48,9 +48,10 @@ void Editor::HandleInput(input_t input) {
 			}
 			else if (cursorPosition.y > 0) {
 				fileBuffer[cursorPosition.y - 1] += fileBuffer[cursorPosition.y];
+				size_t lineSize = fileBuffer[cursorPosition.y].length();
 				fileBuffer.erase(fileBuffer.begin() + cursorPosition.y);
 				-- cursorPosition.y;
-				cursorPosition.x = fileBuffer[cursorPosition.y].size(); 
+				cursorPosition.x = fileBuffer[cursorPosition.y].size() - lineSize; 
 				moved = true;
 			}
 			break;
@@ -72,7 +73,7 @@ void Editor::HandleInput(input_t input) {
 				++ cursorPosition.x;
 				moved = true;
 			}
-			else if (cursorPosition.y > fileBuffer.size() - 1) {
+			else if (cursorPosition.x >= fileBuffer[cursorPosition.y].length()) {
 				++ cursorPosition.y;
 				cursorPosition.x = 0;
 				moved = true;
@@ -126,14 +127,17 @@ void Editor::HandleInput(input_t input) {
 	if (moved) {
 		if ((ssize_t) cursorPosition.x - (ssize_t) scroll.x < 0) {
 			-- scroll.x;
+			if (cursorPosition.x < scroll.x) {
+				scroll.x = cursorPosition.x;
+			}
 		}
-		else if (cursorPosition.x - scroll.x > (*parent).size.x - 2) {
+		else if (cursorPosition.x - scroll.x > (*parent).size.x - 3) {
 			++ scroll.x;
 		}
 		if ((ssize_t) cursorPosition.y - (ssize_t) scroll.y < 0) {
 			-- scroll.y;
 		}
-		else if (cursorPosition.y - scroll.y > (*parent).size.y - 2) {
+		else if (cursorPosition.y - scroll.y > (*parent).size.y - 3) {
 			++ scroll.y;
 		}
 	}

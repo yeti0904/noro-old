@@ -4,6 +4,7 @@
 #include "constants.hh"
 #include "util.hh"
 #include "iohandle.hh"
+#include "fs.hh"
 
 App* app;
 
@@ -83,54 +84,98 @@ void InputEvents::ChangeTabSize(InputWindow& textbox) {
 	app->alert.NewAlert("Changed tab size to " + textbox.userInput, ALERT_TIMER);
 }
 
-void InputEvents::Recording(InputWindow& textbox) {
-	if (textbox.userInput == "New recording") {
-		if (!app->recordingPlayingBack) {
-			app->isRecording = true;
-			app->alert.NewAlert("Started recording", ALERT_TIMER);
-		}
+void InputEvents::RecordingMenu(InputWindow& textbox) {
+	if (textbox.userInput == "Start recording") {
+		app->isRecording = true;
+		app->alert.NewAlert("Started recording", ALERT_TIMER);
 	}
 	else if (textbox.userInput == "Stop recording/playback") {
-		if (app->isRecording) {
-			textbox.resetVars = false;
-			textbox.ResetVariables();
-			textbox.title              = "Type recording name";
-			textbox.content            = "Save recording as:";
-			textbox.inputType          = InputType::Text;
-			textbox.completionCallback = InputEvents::SaveRecording;
-			textbox.complete           = false;
-		}
-		else if (app->recordingPlayingBack) {
-			app->alert.NewAlert("Recording ended", ALERT_TIMER);
-		}
-		else {
-			app->alert.NewAlert("Not recording/playing anything", ALERT_TIMER);
-		}
-	}
-	else if (textbox.userInput == "Play recording") {
-		if (app->isRecording || app->recordingPlayingBack) {
+		if (app->isPlayingBack) {
 			return;
+		}
+		if (app->isRecording) {
+			app->alert.NewAlert("no", ALERT_TIMER);
 		}
 		textbox.resetVars = false;
 		textbox.ResetVariables();
-		textbox.title              = "Type recording name";
-		textbox.content            = "Play recording:";
+		textbox.title              = "Save recording";
+		textbox.content            = "Save recording as: ";
 		textbox.inputType          = InputType::Text;
-		textbox.completionCallback = InputEvents::PlayRecording;
+		textbox.completionCallback = SaveRecording;
+		textbox.complete           = false;
+	}
+	else if (textbox.userInput == "Play recording") {
+		textbox.resetVars = false;
+		textbox.ResetVariables();
+		textbox.title              = "Play recording";
+		textbox.buttons            = Util::GetRecordings();
+		textbox.inputType          = InputType::Selection;
+		textbox.completionCallback = LoadRecording;
 		textbox.complete           = false;
 	}
 }
 
 void InputEvents::SaveRecording(InputWindow& textbox) {
-	if (textbox.userInput[0] == '/') {
-		app->alert.NewAlert("Can only save recordings to ~/.config/noro/recordings",
-			ALERT_TIMER
-		);
-		return;
+	// save recording data
+	std::vector <uint8_t> rawData;
+	for (auto& button : app->recordingData) {
+		if ((int16_t) button == -1) {
+			continue;
+		}
+		rawData.push_back(button & 0xFF00);
+		rawData.push_back(button & 0xFF);
 	}
-	app->SaveRecording(textbox.userInput);
+
+	char* homeraw = getenv("HOME");
+	if (homeraw == nullptr) {
+		IOHandle::Quit();
+		fprintf(stderr, "[ERROR] Failed to get home folder\n");
+		exit(EXIT_FAILURE);
+	}
+	std::string home = homeraw;
+
+	FS::File::Binary::Write(
+		home + "/.config/noro/recordings/" + textbox.userInput,
+		rawData
+	);
+
+	app->alert.NewAlert("Saved recording as " + textbox.userInput, ALERT_TIMER);
+	app->isRecording = false;
+	app->recordingData.clear();
 }
 
-void InputEvents::PlayRecording(InputWindow& textbox) {
-	app->PlayRecording(textbox.userInput);
+void InputEvents::LoadRecording(InputWindow& textbox) {
+	char* homeraw = getenv("HOME");
+	if (homeraw == nullptr) {
+		IOHandle::Quit();
+		fprintf(stderr, "[ERROR] Failed to get home folder\n");
+		exit(EXIT_FAILURE);
+	}
+	std::string home = homeraw;
+
+	std::string recordingPath =
+		home + "/.config/noro/recordings/" + textbox.userInput;
+
+	if (!FS::File::Exists(recordingPath)) {
+		app->alert.NewAlert("The recording has vanished, sorry", ALERT_TIMER);
+		return;
+	}
+
+	std::vector <uint8_t> rawData = FS::File::Binary::Read(recordingPath);
+
+	if (rawData.size() % 2 != 0) {
+		app->alert.NewAlert("Invalid recording file", ALERT_TIMER);
+		return;
+	}
+
+	std::vector <uint16_t> recording;
+	for (size_t i = 0; i < rawData.size(); i += 2) {
+		uint16_t key = rawData[i];
+		key <<= 8;
+		key |=  rawData[i + 1];
+		recording.push_back(key);
+	}
+
+	app->isPlayingBack = true;
+	app->recordingData = recording;
 }

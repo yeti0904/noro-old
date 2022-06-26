@@ -43,9 +43,9 @@ bool Util::StringEndsWith(std::string src, std::string suffix) {
 
 std::vector <std::string> Util::GetThemes() {
 	std::vector <std::string> themes;
-	DIR*            dhnd;
-	struct dirent*  dir;
-	std::string          themedir = std::string(getenv("HOME")) +
+	DIR*                      dhnd;
+	struct dirent*            dir;
+	std::string               themedir = std::string(getenv("HOME")) +
 		"/.config/noro/themes/";
 
 	dhnd = opendir(themedir.c_str());
@@ -61,4 +61,26 @@ std::vector <std::string> Util::GetThemes() {
 	}
 
 	return themes;
+}
+
+std::vector <std::string> Util::GetRecordings() {
+	std::vector <std::string> recordings;
+	DIR*                      dhnd;
+	struct dirent*            dir;
+	std::string               recordingsdir = std::string(getenv("HOME")) +
+		"/.config/noro/recordings/";
+
+	dhnd = opendir(recordingsdir.c_str());
+
+	if (dhnd) {
+		while ((dir = readdir(dhnd)) != NULL) {
+			if (dir->d_type == DT_REG) {
+				recordings.push_back(std::string(dir->d_name).substr(
+					0, std::string(dir->d_name).find('.')
+				));
+			}
+		}
+	}
+
+	return recordings;
 }
