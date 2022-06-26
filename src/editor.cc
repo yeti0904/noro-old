@@ -131,7 +131,7 @@ void Editor::HandleInput(input_t input) {
 				scroll.x = cursorPosition.x;
 			}
 		}
-		else if (cursorPosition.x - scroll.x > (*parent).size.x - 3) {
+		else if (cursorPosition.x - scroll.x > (*parent).size.x - 1) {
 			++ scroll.x;
 		}
 		if ((ssize_t) cursorPosition.y - (ssize_t) scroll.y < 0) {
