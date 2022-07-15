@@ -28,6 +28,10 @@ bool Util::IsNumber(std::string str) {
 	return true;
 }
 
+bool Util::IsBool(std::string str) {
+	return (str == "true") || (str == "false");
+}
+
 bool Util::StringEndsWith(std::string src, std::string suffix) {
 	// check if src ends with suffix
 	if (src.length() < suffix.length()) {

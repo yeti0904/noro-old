@@ -2,11 +2,12 @@
 #include "iohandle.hh"
 
 Theme::Theme() {
-	editor    = {COLOR_BLACK, COLOR_BLACK};
-	titlebar  = {COLOR_BLACK, COLOR_BLACK};
-	alert     = {COLOR_BLACK, COLOR_BLACK};
-	tabs      = {COLOR_BLACK, COLOR_BLACK};
-	activeTab = {COLOR_BLACK, COLOR_BLACK};
+	editor          = {COLOR_BLACK, COLOR_BLACK};
+	titlebar        = {COLOR_BLACK, COLOR_BLACK};
+	alert           = {COLOR_BLACK, COLOR_BLACK};
+	tabs            = {COLOR_BLACK, COLOR_BLACK};
+	activeTab       = {COLOR_BLACK, COLOR_BLACK};
+	columnHighlight = {COLOR_BLACK, COLOR_BLACK};
 }
 
 Theme::~Theme() {
@@ -17,11 +18,12 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 	Theme();
 
 	std::vector <std::string> requiredProperties = {
-		"editorFG",    "editorBG",
-		"titlebarFG",  "titlebarBG",
-		"alertFG",     "alertBG",
-		"tabFG",       "tabBG",
-		"activeTabFG", "activeTabBG"
+		"editorFG",          "editorBG",
+		"titlebarFG",        "titlebarBG",
+		"alertFG",           "alertBG",
+		"tabFG",             "tabBG",
+		"activeTabFG",       "activeTabBG",
+		"columnHighlightFG", "columnHighlightBG"
 	};
 
 	for (size_t i = 0; i < requiredProperties.size(); ++i) {
@@ -34,20 +36,27 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 		}
 	}
 
-	editor.fg    = StringToColour(properties[INI::DefaultSection]["editorFG"]);
-	editor.bg    = StringToColour(properties[INI::DefaultSection]["editorBG"]);
+	editor.fg          = StringToColour(properties[INI::DefaultSection]["editorFG"]);
+	editor.bg          = StringToColour(properties[INI::DefaultSection]["editorBG"]);
 	
-	titlebar.fg  = StringToColour(properties[INI::DefaultSection]["titlebarFG"]);
-	titlebar.bg  = StringToColour(properties[INI::DefaultSection]["titlebarBG"]);
+	titlebar.fg        = StringToColour(properties[INI::DefaultSection]["titlebarFG"]);
+	titlebar.bg        = StringToColour(properties[INI::DefaultSection]["titlebarBG"]);
 	
-	alert.fg     = StringToColour(properties[INI::DefaultSection]["alertFG"]);
-	alert.bg     = StringToColour(properties[INI::DefaultSection]["alertBG"]);
+	alert.fg           = StringToColour(properties[INI::DefaultSection]["alertFG"]);
+	alert.bg           = StringToColour(properties[INI::DefaultSection]["alertBG"]);
 
-	tabs.fg      = StringToColour(properties[INI::DefaultSection]["tabFG"]);
-	tabs.bg      = StringToColour(properties[INI::DefaultSection]["tabBG"]);
+	tabs.fg            = StringToColour(properties[INI::DefaultSection]["tabFG"]);
+	tabs.bg            = StringToColour(properties[INI::DefaultSection]["tabBG"]);
 
-	activeTab.fg = StringToColour(properties[INI::DefaultSection]["activeTabFG"]);
-	activeTab.bg = StringToColour(properties[INI::DefaultSection]["activeTabBG"]);
+	activeTab.fg       = StringToColour(properties[INI::DefaultSection]["activeTabFG"]);
+	activeTab.bg       = StringToColour(properties[INI::DefaultSection]["activeTabBG"]);
+
+	columnHighlight.fg = StringToColour(
+		properties[INI::DefaultSection]["columnHighlightFG"]
+	);
+	columnHighlight.bg = StringToColour(
+		properties[INI::DefaultSection]["columnHighlightBG"]
+	);
 }
 
 int Theme::StringToColour(std::string colour) {

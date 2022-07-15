@@ -27,6 +27,9 @@ void IOHandle::InitColours(Theme& theme) {
 	init_pair(COLOUR_PAIR_ALERT,     theme.alert.fg,     theme.alert.bg);
 	init_pair(COLOUR_PAIR_TABS,      theme.tabs.fg,      theme.tabs.bg);
 	init_pair(COLOUR_PAIR_ACTIVETAB, theme.activeTab.fg, theme.activeTab.bg);
+	init_pair(
+		COLOUR_PAIR_COLUMNHIGHLIGHT, theme.columnHighlight.fg, theme.columnHighlight.bg
+	);
 }
 
 void IOHandle::Quit() {

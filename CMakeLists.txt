@@ -10,3 +10,5 @@ set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -pedantic")
 add_executable(noro ${noro_src})
 
 target_link_libraries(noro ncurses)
+
+install(TARGETS noro DESTINATION "/usr/bin/")

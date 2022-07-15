@@ -62,6 +62,38 @@ void InputEvents::Settings(InputWindow& textbox) {
 		textbox.completionCallback = InputEvents::ChangeTabSize;
 		textbox.complete           = false;
 	}
+	else if (textbox.userInput == "Toggle column highlight") {
+		app->config.highlightColumn = !app->config.highlightColumn;
+		if (app->config.highlightColumn) {
+			textbox.resetVars = false;
+			app->settings[INI::DefaultSection]["highlightColumn"] = "true";
+
+			textbox.ResetVariables();
+			textbox.title              = "Change column highlighted";
+			textbox.content            = "Highlight column:";
+			textbox.inputType          = InputType::Text;
+			textbox.completionCallback = InputEvents::ChangeColumnHighlighted;
+			textbox.complete           = false;
+		}
+		else {
+			app->settings[INI::DefaultSection]["highlightColumn"] = "false";
+			app->SaveConfig();
+			IOHandle::Quit();
+			app->UpdateConfig();
+			app->alert.NewAlert("Disabled column highlighting", ALERT_TIMER);
+		}
+	}
+	else if (textbox.userInput == "Change highlighted column") {
+		textbox.resetVars = false;
+		app->settings[INI::DefaultSection]["highlightColumn"] = "true";
+		
+		textbox.ResetVariables();
+		textbox.title              = "Change column highlighted";
+		textbox.content            = "Highlight column:";
+		textbox.inputType          = InputType::Text;
+		textbox.completionCallback = InputEvents::ChangeColumnHighlighted;
+		textbox.complete           = false;
+	}
 }
 
 void InputEvents::ChangeTheme(InputWindow& textbox) {
@@ -82,6 +114,20 @@ void InputEvents::ChangeTabSize(InputWindow& textbox) {
 	IOHandle::Quit();
 	app->UpdateConfig();
 	app->alert.NewAlert("Changed tab size to " + textbox.userInput, ALERT_TIMER);
+}
+
+void InputEvents::ChangeColumnHighlighted(InputWindow& textbox) {
+	if (!Util::IsNumber(textbox.userInput)) {
+		app->alert.NewAlert("Error: input not an integer", ALERT_TIMER);
+		return;
+	}
+	app->settings[INI::DefaultSection]["highlightedColumn"] = textbox.userInput;
+	app->SaveConfig();
+	IOHandle::Quit();
+	app->UpdateConfig();
+	app->alert.NewAlert(
+		"Changed highlighted column to " + textbox.userInput, ALERT_TIMER
+	);
 }
 
 void InputEvents::RecordingMenu(InputWindow& textbox) {

@@ -6,7 +6,7 @@
 
 uint8_t tabSize;
 
-void Renderers::Noro::Global(App& app) {
+void Renderers::Noro::Global(App& app, AppConfig&) {
 	// set global variables for use in window renderers
 	tabSize = app.config.tabSize;
 
@@ -53,7 +53,7 @@ void Renderers::Noro::Global(App& app) {
 	attroff(COLOR_PAIR(COLOUR_PAIR_TITLEBAR));
 }
 
-void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
+void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& config) {
 	attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 
 	// render titlebar
@@ -72,6 +72,11 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 
 	for (size_t i = editorWindow.position.y; i < editorWindow.size.y; ++i) {
 		mvhline(i, editorWindow.position.x, ' ', editorWindow.size.x);
+	}
+	if (config.highlightColumn) {
+		attron(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
+		mvvline(1, config.highlightedColumn, ' ', LINES - 2);
+		attroff(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
 	}
 
 	for (size_t i = editor.scroll.y;
@@ -101,8 +106,16 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 			(j <= editor.fileBuffer[i].length() + lineExtendLength) &&
 			(j - editor.scroll.x < editorWindow.size.x);
 		++j) {
+			attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 			if ((i == editor.cursorPosition.y) && (j == cursorX)) {
 				attron(A_REVERSE);
+			}
+			else if (
+				config.highlightColumn && 
+				(j - editor.scroll.x == config.highlightedColumn)
+			) {
+				attroff(COLOR_PAIR(COLOUR_PAIR_EDITOR));
+				attron(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
 			}
 
 			switch (line[j]) {
@@ -128,6 +141,13 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 
 			if ((i == editor.cursorPosition.y) && (j == cursorX)) {
 				attroff(A_REVERSE);
+			}
+			else if (
+				config.highlightColumn && 
+				(j - editor.scroll.x == config.highlightedColumn)
+			) {
+				attroff(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
+				attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 			}
 		}
 	}

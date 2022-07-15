@@ -9,16 +9,17 @@
 
 App::App(int argc, char** argv) {
 	// set variables
-	run              = true;
-	wasInit          = false;
-	textboxFocused   = false;
-	textbox.size.x   = 30;
-	textbox.size.y   = 5;
-	FPSLimit         = 60;
-	config.tabSize   = 4;
-	isRecording      = false;
-	isPlayingBack    = false;
-	playBackIterator = 0;
+	run                      = true;
+	wasInit                  = false;
+	textboxFocused           = false;
+	textbox.size.x           = 30;
+	textbox.size.y           = 5;
+	FPSLimit                 = 60;
+	config.tabSize           = 4;
+	isRecording              = false;
+	isPlayingBack            = false;
+	playBackIterator         = 0;
+	config.highlightedColumn = 0;
 	
 	for (int i = 0; i < argc; ++i) {
 		args.push_back(argv[i]);
@@ -176,7 +177,9 @@ void App::Update() {
 				textbox.inputType          = InputType::Selection;
 				textbox.buttons            = {
 					"Change theme",
-					"Change tab size"
+					"Change tab size",
+					"Toggle column highlight",
+					"Change highlighted column"
 				};
 				break;
 			}
@@ -216,8 +219,8 @@ void App::Update() {
 }
 
 void App::Render() {
-	Renderers::Noro::Global(*this);
-	Renderers::Noro::RenderEditorWindow(editorWindow);
+	Renderers::Noro::Global(*this, config);
+	Renderers::Noro::RenderEditorWindow(editorWindow, config);
 	if (alert.active) {
 		alert.Render();
 	}
@@ -257,7 +260,8 @@ void App::UpdateConfig() {
 		FS::File::Write(home + "/.config/noro/settings.ini",
 			"# noro properties\n"
 			"theme = noro\n"
-			"tabSize = 4"
+			"tabSize = 4\n"
+			"highlightColumn = false"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/noro.ini")) {
@@ -272,7 +276,9 @@ void App::UpdateConfig() {
 			"tabFG = black\n"
 			"tabBG = cyan\n"
 			"activeTabFG = cyan\n"
-			"activeTabBG = black"
+			"activeTabBG = black\n"
+			"columnHighlightFG = black\n"
+			"columnHighlightBG = cyan"
 		);
 		
 	}
@@ -288,7 +294,9 @@ void App::UpdateConfig() {
 			"tabFG = black\n"
 			"tabBG = green\n"
 			"activeTabFG = green\n"
-			"activeTabBG = black"
+			"activeTabBG = black\n"
+			"columnHighlightFG = black\n"
+			"columnHighlightBG = green"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/mono.ini")) {
@@ -320,7 +328,8 @@ void App::UpdateConfig() {
 	}
 	std::vector <std::string> requiredProperties = {
 		"theme",
-		"tabSize"
+		"tabSize",
+		"highlightColumn"
 	};
 
 	/*std::vector <std::string> props;
@@ -334,6 +343,23 @@ void App::UpdateConfig() {
 			fprintf(stderr, "[ERROR] missing property in config file: %s\n", requiredProperties[i].c_str());
 			exit(1);
 		}
+	}
+	if (!Util::IsBool(settings[INI::DefaultSection]["highlightColumn"])) {
+		fprintf(stderr, "[ERROR] property highlightColumn is not a valid boolean\n");
+		exit(1);
+	}
+	config.highlightColumn = settings.AsBoolean(
+		INI::DefaultSection, "highlightColumn"
+	);
+	if (config.highlightColumn) {
+		if (!settings.Contains(INI::DefaultSection, "highlightedColumn")) {
+			fprintf(stderr, "[ERROR] highlighted column enabled but value not given\n");
+			exit(1);
+		}
+		config.highlightColumn   = true;
+		config.highlightedColumn = (size_t) settings.AsInteger(
+			INI::DefaultSection, "highlightedColumn"
+		);
 	}
 
 	// handle config
@@ -371,10 +397,17 @@ void App::SaveConfig() {
 		return;
 	}
 	std::string home = homeraw;
-	
-	FS::File::Write(home + "/.config/noro/settings.ini",
+
+	std::string properties =
 		"# noro properties\n"
 		"theme = " + settings[INI::DefaultSection]["theme"] +
-		"\ntabSize = " + settings[INI::DefaultSection]["tabSize"]
-	);
+		"\ntabSize = " + settings[INI::DefaultSection]["tabSize"] +
+		"\nhighlightColumn = " + settings[INI::DefaultSection]["highlightColumn"];
+		
+	if (settings[INI::DefaultSection]["highlightColumn"] == "true") {
+		properties +=
+			"\nhighlightedColumn = " + settings[INI::DefaultSection]["highlightedColumn"];
+	}
+	
+	FS::File::Write(home + "/.config/noro/settings.ini", properties);
 }

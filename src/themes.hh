@@ -13,6 +13,7 @@ class Theme {
 		ColourPair alert;
 		ColourPair tabs;
 		ColourPair activeTab;
+		ColourPair columnHighlight;
 
 		// functions
 		Theme();

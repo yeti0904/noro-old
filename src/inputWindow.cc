@@ -241,7 +241,7 @@ void InputWindow::Render() {
 			{
 				size_t lines = 0;
 				size_t cols  = 0;
-				for (size_t i = scrollX; i < content.length(); ++i) {
+				for (size_t i = 0; i < content.length(); ++i) {
 					switch (content[i]) {
 						case '\r': break;
 						case '\n': {
@@ -267,23 +267,23 @@ void InputWindow::Render() {
 
 			mvhline(position.y + size.y - 1, position.x + 1, ' ', size.x - 1);
 			move(position.y + size.y - 1, position.x + 1);
-			for (size_t i = scrollX; (i <= userInput.length()) && (i - scrollX < size.x - 2); ++i) {
-				if (i - scrollX == cursorX) {
+			for (size_t i = scrollX; (i <= userInput.length()) && (i - scrollX <= size.x - 2); ++i) {
+				if (i == cursorX) {
 					attron(A_REVERSE);
 				}
 
-				switch (userInput[i - scrollX]) {
+				switch (userInput[i]) {
 					case '\0': {
 						addch(' ');
 						break;
 					}
 					default: {
-						addch(userInput[i - scrollX]);
+						addch(userInput[i]);
 						break;
 					}
 				}
 				
-				if (i - scrollX == cursorX) {
+				if (i == cursorX) {
 					attroff(A_REVERSE);
 				}
 			}
