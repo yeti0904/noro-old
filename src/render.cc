@@ -9,7 +9,7 @@ uint8_t tabSize;
 void Renderers::Noro::Global(App& app) {
 	// set global variables for use in window renderers
 	tabSize = app.config.tabSize;
-	
+
 	// clear screen
 	for (int i = 0; i < LINES; ++i) {
 		mvhline(i, 0, 'c', COLS);
@@ -30,7 +30,7 @@ void Renderers::Noro::Global(App& app) {
 
 	{
 		std::string bottomBarInfo;
-		bottomBarInfo = 
+		bottomBarInfo =
 			std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.y)
 				+ ":"
 			+ std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.x);
@@ -49,7 +49,7 @@ void Renderers::Noro::Global(App& app) {
 			);
 		}
 	}
-	
+
 	attroff(COLOR_PAIR(COLOUR_PAIR_TITLEBAR));
 }
 
@@ -69,25 +69,43 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 
 	// render editor
 	Editor editor = editorWindow.editors[editorWindow.tabIndex];
-	
+
 	for (size_t i = editorWindow.position.y; i < editorWindow.size.y; ++i) {
 		mvhline(i, editorWindow.position.x, ' ', editorWindow.size.x);
 	}
 
-	for (size_t i = editor.scroll.y; 
+	for (size_t i = editor.scroll.y;
 		(i - editor.scroll.y < (editorWindow.size.y - 2)) &&
 		(i < editor.fileBuffer.size());
 	++i) {
+		std::string line;
+		size_t lineExtendLength = 0;
+		size_t      cursorX = editor.cursorPosition.x;
+		for (size_t j = 0; j < editor.fileBuffer[i].length(); ++j) {
+			switch (editor.fileBuffer[i][j]) {
+				case '\t': {
+					if (i == editor.cursorPosition.y && j < editor.cursorPosition.x) {
+						cursorX += tabSize - 1;
+					}
+					lineExtendLength += tabSize - 1;
+					line += std::string(tabSize, ' ');
+					break;
+				}
+				default: {
+					line += editor.fileBuffer[i][j];
+				}
+			}
+		}
 		move((editorWindow.position.y + i) - editor.scroll.y, editorWindow.position.x);
 		for (size_t j = editor.scroll.x;
-			(j <= editor.fileBuffer[i].length()) &&
+			(j <= editor.fileBuffer[i].length() + lineExtendLength) &&
 			(j - editor.scroll.x < editorWindow.size.x);
 		++j) {
-			if ((i == editor.cursorPosition.y) && (j == editor.cursorPosition.x)) {
+			if ((i == editor.cursorPosition.y) && (j == cursorX)) {
 				attron(A_REVERSE);
 			}
-			
-			switch (editor.fileBuffer[i][j]) {
+
+			switch (line[j]) {
 				case '\n':
 				case '\r': {
 					break;
@@ -103,12 +121,12 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 					break;
 				}
 				default: {
-					addch(editor.fileBuffer[i][j]);
+					addch(line[j]);
 					break;
 				}
 			}
-			
-			if ((i == editor.cursorPosition.y) && (j == editor.cursorPosition.x)) {
+
+			if ((i == editor.cursorPosition.y) && (j == cursorX)) {
 				attroff(A_REVERSE);
 			}
 		}
@@ -134,7 +152,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow) {
 			attroff(COLOR_PAIR(COLOUR_PAIR_TABS));
 			attron(COLOR_PAIR(COLOUR_PAIR_ACTIVETAB));
 		}
-		for (size_t j = 0; 
+		for (size_t j = 0;
 			j < editorWindow.editors[i].fileName.length();
 		++j) {
 			addch(editorWindow.editors[i].fileName[j]);
