@@ -227,7 +227,7 @@ void InputEvents::LoadRecording(InputWindow& textbox) {
 }
 
 void InputEvents::SaveAfterQuit(InputWindow& textbox) {
-	if (textbox.userInput == "Yes") {
+	if ((textbox.userInput == "Y") || (textbox.userInput == "y")) {
 		for (auto& editor : app->editorWindow.editors) {
 			editor.SaveFile();
 		}

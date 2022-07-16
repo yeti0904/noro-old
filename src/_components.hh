@@ -19,7 +19,7 @@
 #include "../inicxx/inicxx.hh"
 
 // types
-typedef uint16_t input_t;
+typedef int16_t input_t;
 
 // macros
 #define CTRL(x) ((x) & 0x1f)

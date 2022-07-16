@@ -12,7 +12,8 @@ enum class InputExitCode {
 
 enum class InputType {
 	Text,
-	Selection
+	Selection,
+	KeyPress
 };
 
 class InputWindow {

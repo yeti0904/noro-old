@@ -93,13 +93,9 @@ void App::Update() {
 					if (!editor.saved) {
 						textboxFocused = true;
 						textbox.CenterOnScreen();
-						textbox.Init("Save work?", "");
+						textbox.Init("Unsaved work", "Do you want to save it? (Y/N)");
 						textbox.completionCallback = InputEvents::SaveAfterQuit;
-						textbox.inputType          = InputType::Selection;
-						textbox.buttons            = {
-							"Yes",
-							"No"
-						};
+						textbox.inputType          = InputType::KeyPress;
 						run = true;
 					}
 				}

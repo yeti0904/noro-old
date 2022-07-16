@@ -209,6 +209,31 @@ void InputWindow::HandleInput(input_t input) {
 					break;
 				}
 			}
+			break;
+		}
+		case InputType::KeyPress: {
+			if (input != -1) {
+				userInput = std::string(1, input);
+				resetVars = true;
+					
+				if (completionCallback != nullptr) {
+					completionCallback(*this);
+				}
+
+				// reset textbox
+				if (resetVars) {
+					content            = "";
+					cursorX            = 0;
+					scrollX            = 0;
+					completionCallback = nullptr;
+					userInput          = "";
+					historySelection   = -1;
+					selectionScroll    = 0;
+					selectionSelected  = 0;
+					complete           = true;
+				}
+			}
+			break;
 		}
 	}
 }
@@ -235,6 +260,7 @@ void InputWindow::Render() {
 		title.c_str());
 
 	switch (inputType) {
+		case InputType::KeyPress:
 		case InputType::Text: {
 			// render content
 			move(position.y + 1, position.x + 1);
@@ -263,11 +289,14 @@ void InputWindow::Render() {
 
 			// render input
 			attroff(COLOR_PAIR(COLOUR_PAIR_TITLEBAR));
+			if (inputType == InputType::KeyPress) {
+				break;
+			}
 			attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 
 			mvhline(position.y + size.y - 1, position.x + 1, ' ', size.x - 1);
 			move(position.y + size.y - 1, position.x + 1);
-			for (size_t i = scrollX; (i <= userInput.length()) && (i - scrollX <= size.x - 2); ++i) {
+			for (size_t i = scrollX; (i <= userInput.length()) && (i - scrollX <= size.x - 1); ++i) {
 				if (i == cursorX) {
 					attron(A_REVERSE);
 				}
