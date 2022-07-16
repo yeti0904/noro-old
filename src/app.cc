@@ -89,6 +89,20 @@ void App::Update() {
 		switch (input) {
 			case CTRL('q'): { // quit
 				run = false;
+				for (auto& editor : editorWindow.editors) {
+					if (!editor.saved) {
+						textboxFocused = true;
+						textbox.CenterOnScreen();
+						textbox.Init("Save work?", "");
+						textbox.completionCallback = InputEvents::SaveAfterQuit;
+						textbox.inputType          = InputType::Selection;
+						textbox.buttons            = {
+							"Yes",
+							"No"
+						};
+						run = true;
+					}
+				}
 				break;
 			}
 			/*

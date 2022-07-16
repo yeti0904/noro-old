@@ -15,4 +15,5 @@ namespace InputEvents {
 	void RecordingMenu(InputWindow& textbox);
 	void SaveRecording(InputWindow& textbox);
 	void LoadRecording(InputWindow& textbox);
+	void SaveAfterQuit(InputWindow& textbox);
 }

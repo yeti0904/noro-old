@@ -225,3 +225,12 @@ void InputEvents::LoadRecording(InputWindow& textbox) {
 	app->isPlayingBack = true;
 	app->recordingData = recording;
 }
+
+void InputEvents::SaveAfterQuit(InputWindow& textbox) {
+	if (textbox.userInput == "Yes") {
+		for (auto& editor : app->editorWindow.editors) {
+			editor.SaveFile();
+		}
+	}
+	app->run = false;
+}
