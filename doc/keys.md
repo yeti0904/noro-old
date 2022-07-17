@@ -12,6 +12,9 @@
 | Ctrl + W   | Close tab                  |
 | Page down  | next tab                   |
 | Page up    | previous tab               |
+| Ctrl + T   | Suspend to terminal        |
+| Ctrl + Y   | Open settings menu         |
+| Ctrl + R   | Reload noro                |
 
 ## textbox windows
 | Key        | Action                     |
