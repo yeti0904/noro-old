@@ -73,7 +73,10 @@ void Editor::HandleInput(input_t input) {
 				++ cursorPosition.x;
 				moved = true;
 			}
-			else if (cursorPosition.x >= fileBuffer[cursorPosition.y].length()) {
+			else if (
+				(cursorPosition.x >= fileBuffer[cursorPosition.y].length()) &&
+				(cursorPosition.y != fileBuffer.size() - 1)
+			) {
 				++ cursorPosition.y;
 				cursorPosition.x = 0;
 				moved = true;
