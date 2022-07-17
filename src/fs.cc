@@ -12,7 +12,9 @@ std::string FS::File::Read(std::string fname) {
 	}
 	fhnd.close();
 
-	ret.erase(ret.length() - 1, 1);
+	if (ret.length() > 0) {
+		ret.erase(ret.length() - 1, 1);
+	}
 
 	return ret;
 }
