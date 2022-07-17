@@ -24,20 +24,6 @@ none B)
 ## screenshots
 <img src="/pic/noro2.png">
 
-## keys
-| Key        | Action                     |
-| ---------- | -------------------------- |
-| Ctrl + Q   | Quit                       |
-| Ctrl + E   | Maximise/unmaximise window |
-| Ctrl + S   | Save file                  |
-| Ctrl + D   | Save as                    |
-| Ctrl + O   | Open                       |
-| Ctrl + F   | Find                       |
-| Ctrl + N   | New tab                    |
-| Ctrl + W   | Close tab                  |
-| Page down  | next tab                   |
-| Page up    | previous tab               |
-
 ## features
 ### textbox history
 use the up/down arrow keys to move up and down through your textbox history
