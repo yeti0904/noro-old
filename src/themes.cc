@@ -106,5 +106,8 @@ int Theme::StringToColour(std::string colour) {
 	if (colour == "brightwhite") {
 		return COLOR_BRIGHTWHITE;
 	}
+	if (colour == "default") {
+		return -1;
+	}
 	else return -1;
 }

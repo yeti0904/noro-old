@@ -328,6 +328,24 @@ void App::UpdateConfig() {
 			"columnHighlightBG = white"
 		);
 	}
+	if (!FS::File::Exists(home + "/.config/noro/themes/gruvy.ini")) {
+		FS::File::Write(home + "/.config/noro/themes/gruvy.ini",
+			"# gruvy theme <3\n"
+			"# made by LordOfTrident\n"
+			"editorFG = default\n"
+			"editorBG = default\n"
+			"titlebarFG = black\n"
+			"titlebarBG = green\n"
+			"alertFG = black\n"
+			"alertBG = green\n"
+			"tabFG = green\n"
+			"tabBG = default\n"
+			"activeTabFG = brightgreen\n"
+			"activeTabBG = default\n"
+			"columnHighlightFG = white\n"
+			"columnHighlightBG = grey"
+		);
+	}
 
 	// set up config
 	try {
