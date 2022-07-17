@@ -30,3 +30,6 @@ these colours will work in 16 colour terminals:
 - brightmagenta
 - brightcyan
 - brightwhite
+
+## default colour
+the `default` colour will use your terminal's FG/BG colour
