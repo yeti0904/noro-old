@@ -65,6 +65,9 @@ void InputWindow::HandleInput(input_t input) {
 					break;
 				}
 				case KEY_UP: { // go up in history
+					if (history.size() == 0) {
+						break;
+					}
 					if (historySelection > 0) {
 						-- historySelection;
 					}
@@ -76,6 +79,9 @@ void InputWindow::HandleInput(input_t input) {
 					break;
 				}
 				case KEY_DOWN: { // go down in history
+					if (history.size() == 0) {
+						break;
+					}
 					if (historySelection == -1) {
 						break;
 					}
@@ -277,7 +283,7 @@ void InputWindow::Render() {
 						}
 						default: {
 							++ cols;
-							if (cols < size.x - 1) {
+							if (cols < size.x) {
 								addch(content[i]);
 							}
 							break; 
@@ -296,7 +302,7 @@ void InputWindow::Render() {
 
 			mvhline(position.y + size.y - 1, position.x + 1, ' ', size.x - 1);
 			move(position.y + size.y - 1, position.x + 1);
-			for (size_t i = scrollX; (i <= userInput.length()) && (i - scrollX <= size.x - 1); ++i) {
+			for (size_t i = scrollX; (i <= userInput.length()) && (i - scrollX <= size.x - 2); ++i) {
 				if (i == cursorX) {
 					attron(A_REVERSE);
 				}
