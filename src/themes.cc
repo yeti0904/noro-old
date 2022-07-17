@@ -84,5 +84,27 @@ int Theme::StringToColour(std::string colour) {
 	if (colour == "white") {
 		return COLOR_WHITE;
 	}
+	// +16 colours
+	if (colour == "grey") {
+		return COLOR_GREY;
+	}
+	if (colour == "brightred") {
+		return COLOR_BRIGHTRED;
+	}
+	if (colour == "brightgreen") {
+		return COLOR_BRIGHTGREEN;
+	}
+	if (colour == "brightyellow") {
+		return COLOR_BRIGHTYELLOW;
+	}
+	if (colour == "brightblue") {
+		return COLOR_BRIGHTBLUE;
+	}
+	if (colour == "brightcyan") {
+		return COLOR_BRIGHTCYAN;
+	}
+	if (colour == "brightwhite") {
+		return COLOR_BRIGHTWHITE;
+	}
 	else return -1;
 }
