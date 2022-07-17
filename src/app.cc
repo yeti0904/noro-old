@@ -321,7 +321,9 @@ void App::UpdateConfig() {
 			"tabFG = black\n"
 			"tabBG = white\n"
 			"activeTabFG = white\n"
-			"activeTabBG = black"
+			"activeTabBG = black\n"
+			"columnHighlightFG = black\n"
+			"columnHighlightBG = white"
 		);
 	}
 
