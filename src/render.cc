@@ -75,7 +75,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 	}
 	if (config.highlightColumn) {
 		attron(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
-		mvvline(1, config.highlightedColumn, ' ', LINES - 2);
+		mvvline(1, config.highlightedColumn - editor.scroll.x, ' ', LINES - 2);
 		attroff(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
 	}
 
