@@ -128,13 +128,31 @@ void Editor::HandleInput(input_t input) {
 	}
 
 	if (moved) {
-		if ((ssize_t) cursorPosition.x - (ssize_t) scroll.x < 0) {
+		std::string line;
+		size_t      lineExtendLength = 0;
+		size_t      cursorX = cursorPosition.x;
+		for (size_t j = 0; j < fileBuffer[cursorPosition.y].length(); ++j) {
+			switch (fileBuffer[cursorPosition.y][j]) {
+				case '\t': {
+					if (j < cursorPosition.x) {
+						cursorX += parent->config->tabSize - 1;
+					}
+					lineExtendLength += parent->config->tabSize - 1;
+					line             += std::string(parent->config->tabSize, ' ');
+					break;
+				}
+				default: {
+					line += fileBuffer[cursorPosition.y][j];
+				}
+			}
+		}
+		if ((ssize_t) cursorX - (ssize_t) scroll.x < 0) {
 			-- scroll.x;
 			if (cursorPosition.x < scroll.x) {
 				scroll.x = cursorPosition.x;
 			}
 		}
-		else if (cursorPosition.x - scroll.x > (*parent).size.x - 1) {
+		else if (cursorX - scroll.x > (*parent).size.x - 1) {
 			++ scroll.x;
 		}
 		if ((ssize_t) cursorPosition.y - (ssize_t) scroll.y < 0) {

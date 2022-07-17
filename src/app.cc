@@ -48,6 +48,8 @@ App::App(int argc, char** argv) {
 	}
 
 	UpdateConfig();
+
+	editorWindow.config = &config;
 	
 	InputEvents::Init(*this);
 	wasInit = true;

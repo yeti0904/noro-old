@@ -84,7 +84,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 		(i < editor.fileBuffer.size());
 	++i) {
 		std::string line;
-		size_t lineExtendLength = 0;
+		size_t      lineExtendLength = 0;
 		size_t      cursorX = editor.cursorPosition.x;
 		for (size_t j = 0; j < editor.fileBuffer[i].length(); ++j) {
 			switch (editor.fileBuffer[i][j]) {
@@ -93,7 +93,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 						cursorX += tabSize - 1;
 					}
 					lineExtendLength += tabSize - 1;
-					line += std::string(tabSize, ' ');
+					line             += std::string(tabSize, ' ');
 					break;
 				}
 				default: {

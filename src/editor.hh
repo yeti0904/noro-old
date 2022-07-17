@@ -1,6 +1,7 @@
 #pragma once
 #include "_components.hh"
 #include "structures.hh"
+#include "config.hh"
 
 class EditorWindow;
 
@@ -33,6 +34,7 @@ class EditorWindow {
 		Vec2                 position;
 		Vec2                 size;
 		bool                 maximised;
+		AppConfig*           config;
 
 		// functions
 		EditorWindow();
