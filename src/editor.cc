@@ -38,6 +38,13 @@ void Editor::HandleInput(input_t input) {
 			++ cursorPosition.y;
 			cursorPosition.x = 0;
 			moved = true;
+
+			// do indentation
+			if (parent->config->autoIndent && (cursorPosition.y > 0)) {
+				fileBuffer[cursorPosition.y].insert(
+					0, CountIndents(cursorPosition.y - 1), '\t'
+				);
+			}
 			break;
 		}
 		case 127: // also used for backspace key
@@ -57,114 +64,151 @@ void Editor::HandleInput(input_t input) {
 			break;
 		}
 		case KEY_LEFT: {
-			if (cursorPosition.x != 0) {
-				-- cursorPosition.x;
-				moved = true;
-			}
-			else if (cursorPosition.y > 0) {
-				-- cursorPosition.y;
-				cursorPosition.x = fileBuffer[cursorPosition.y].size();
-				moved = true;
-			}
+			CursorLeft();
+			moved = true;
 			break;
 		}
 		case KEY_RIGHT: {
-			if (cursorPosition.x < fileBuffer[cursorPosition.y].length()) {
-				++ cursorPosition.x;
-				moved = true;
-			}
-			else if (
-				(cursorPosition.x >= fileBuffer[cursorPosition.y].length()) &&
-				(cursorPosition.y != fileBuffer.size() - 1)
-			) {
-				++ cursorPosition.y;
-				cursorPosition.x = 0;
-				moved = true;
-			}
+			CursorRight();
+			moved = true;
 			break;
 		}
 		case KEY_UP: {
-			if (cursorPosition.y > 0) {
-				-- cursorPosition.y;
-				if (cursorPosition.x > fileBuffer[cursorPosition.y].size()) {
-					cursorPosition.x = fileBuffer[cursorPosition.y].size();
-				}
-				moved = true;
-			}
-			else {
-				cursorPosition.x = 0;
-				moved = true;
-			}
+			CursorUp();
+			moved = true;
 			break;
 		}
 		case KEY_DOWN: {
-			if (cursorPosition.y < fileBuffer.size() - 1) {
-				++ cursorPosition.y;
-				if (cursorPosition.x > fileBuffer[cursorPosition.y].size()) {
-					cursorPosition.x = fileBuffer[cursorPosition.y].size();
-				}
-				moved = true;
-			}
-			else {
-				cursorPosition.x = fileBuffer[cursorPosition.y].size();
-				moved = true;
-			}
+			CursorDown();
+			moved = true;
 			break;
 		}
 		default: {
-			if (((input >= ' ') && (input <= '~')) || (input == '\t')) {
-				if (saved) {
-					title = "Editor (" + fileName + ") +";
-				}
-				fileBuffer[cursorPosition.y].insert(
-					cursorPosition.x, std::string(1, input)
-				);
-				++ cursorPosition.x;
-				saved = false;
-				moved = true;
-			}
+			InsertText(std::string(1, input));
+			moved = true;
 			break;
 		}
 	}
 
 	if (moved) {
-		std::string line;
-		size_t      lineExtendLength = 0;
-		size_t      cursorX = cursorPosition.x;
-		for (size_t j = 0; j < fileBuffer[cursorPosition.y].length(); ++j) {
-			switch (fileBuffer[cursorPosition.y][j]) {
-				case '\t': {
-					if (j < cursorPosition.x) {
-						cursorX += parent->config->tabSize - 1;
-					}
-					lineExtendLength += parent->config->tabSize - 1;
-					line             += std::string(parent->config->tabSize, ' ');
-					break;
+		UpdateScroll();
+	}
+}
+
+void Editor::UpdateScroll() {
+	std::string line;
+	size_t      lineExtendLength = 0;
+	size_t      cursorX = cursorPosition.x;
+	for (size_t j = 0; j < fileBuffer[cursorPosition.y].length(); ++j) {
+		switch (fileBuffer[cursorPosition.y][j]) {
+			case '\t': {
+				if (j < cursorPosition.x) {
+					cursorX += parent->config->tabSize - 1;
 				}
-				default: {
-					line += fileBuffer[cursorPosition.y][j];
-				}
+				lineExtendLength += parent->config->tabSize - 1;
+				line             += std::string(parent->config->tabSize, ' ');
+				break;
 			}
-		}
-		if ((ssize_t) cursorX - (ssize_t) scroll.x < 0) {
-			-- scroll.x;
-			if (cursorX < scroll.x) {
-				scroll.x = cursorX;
+			default: {
+				line += fileBuffer[cursorPosition.y][j];
 			}
-		}
-		else if (cursorX - scroll.x > parent->size.x - 1) {
-			++ scroll.x;
-			if (cursorX > scroll.x) {
-				scroll.x = (cursorX - parent->size.x) + 1;
-			}
-		}
-		if ((ssize_t) cursorPosition.y - (ssize_t) scroll.y < 0) {
-			-- scroll.y;
-		}
-		else if (cursorPosition.y - scroll.y > parent->size.y - 3) {
-			++ scroll.y;
 		}
 	}
+	if ((ssize_t) cursorX - (ssize_t) scroll.x < 0) {
+		-- scroll.x;
+		if (cursorX < scroll.x) {
+			scroll.x = cursorX;
+		}
+	}
+	else if (cursorX - scroll.x > parent->size.x - 1) {
+		++ scroll.x;
+		if (cursorX > scroll.x) {
+			scroll.x = (cursorX - parent->size.x) + 1;
+		}
+	}
+	if ((ssize_t) cursorPosition.y - (ssize_t) scroll.y < 0) {
+		-- scroll.y;
+	}
+	else if (cursorPosition.y - scroll.y > parent->size.y - 3) {
+		++ scroll.y;
+	}
+}
+
+void Editor::CursorUp() {
+	if (cursorPosition.y > 0) {
+		-- cursorPosition.y;
+		if (cursorPosition.x > fileBuffer[cursorPosition.y].size()) {
+			cursorPosition.x = fileBuffer[cursorPosition.y].size();
+		}
+	}
+	else {
+		cursorPosition.x = 0;
+	}
+}
+
+void Editor::CursorDown() {
+	if (cursorPosition.y < fileBuffer.size() - 1) {
+		++ cursorPosition.y;
+		if (cursorPosition.x > fileBuffer[cursorPosition.y].size()) {
+			cursorPosition.x = fileBuffer[cursorPosition.y].size();
+		}
+	}
+	else {
+		cursorPosition.x = fileBuffer[cursorPosition.y].size();
+	}
+}
+
+void Editor::CursorLeft() {
+	if (cursorPosition.x != 0) {
+		-- cursorPosition.x;
+	}
+	else if (cursorPosition.y > 0) {
+		-- cursorPosition.y;
+		cursorPosition.x = fileBuffer[cursorPosition.y].size();
+	}
+}
+
+void Editor::CursorRight() {
+	if (cursorPosition.x < fileBuffer[cursorPosition.y].length()) {
+		++ cursorPosition.x;
+	}
+	else if (
+		(cursorPosition.x >= fileBuffer[cursorPosition.y].length()) &&
+		(cursorPosition.y != fileBuffer.size() - 1)
+	) {
+		++ cursorPosition.y;
+		cursorPosition.x = 0;
+	}
+}
+
+void Editor::InsertText(std::string text) {
+	for (auto& input : text) {
+		if (((input >= ' ') && (input <= '~')) || (input == '\t')) {
+			if (saved) {
+				title = "Editor (" + fileName + ") +";
+			}
+			fileBuffer[cursorPosition.y].insert(
+				cursorPosition.x, std::string(1, input)
+			);
+			++ cursorPosition.x;
+			saved = false;
+		}
+	}
+}
+
+size_t Editor::CountIndents(size_t y) {
+	/*size_t ret = 0;
+	for (size_t i = 0; i < fileBuffer[y].length(); ++i) {
+		if (fileBuffer[y][i] == '\t') {
+			++ ret;
+			continue;
+		}
+		break;
+	}
+
+	return ret;*/
+
+	return fileBuffer[y].find_first_not_of('\t', 0);
 }
 
 Editor::~Editor() {

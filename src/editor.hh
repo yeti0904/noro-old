@@ -18,7 +18,14 @@ class Editor {
 
 		// functions
 		Editor(std::string fname = "");
-		void HandleInput(input_t input);
+		void   HandleInput(input_t input);
+		void   CursorUp();
+		void   CursorDown();
+		void   CursorLeft();
+		void   CursorRight();
+		void   UpdateScroll();
+		void   InsertText(std::string text);
+		size_t CountIndents(size_t y);
 		~Editor();
 
 		// util functions

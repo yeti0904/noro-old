@@ -6,3 +6,9 @@ noro
 .gitignore
 Unnamed
 install_manifest.txt
+noro_0.1.0_amd64.build
+noro_0.1.0.dsc
+noro_0.1.0_source.build
+noro_0.1.0_source.buildubfi
+noro_0.1.0_source.changes
+PACKAGE_unknown_source.build

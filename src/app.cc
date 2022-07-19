@@ -169,6 +169,7 @@ void App::Update() {
 			case CTRL('n'): { // new tab
 				editorWindow.editors.push_back(Editor());
 				editorWindow.editors.back().parent = &editorWindow;
+				editorWindow.tabIndex = editorWindow.editors.size() - 1;
 				break;
 			}
 			case CTRL('w'): { // close tab
@@ -178,6 +179,9 @@ void App::Update() {
 				if (editorWindow.editors.size() == 0) {
 					run = false;
 					return;
+				}
+				if (editorWindow.tabIndex >= editorWindow.editors.size()) {
+					editorWindow.tabIndex = editorWindow.editors.size() - 1;
 				}
 				break;
 			}
@@ -273,7 +277,8 @@ void App::UpdateConfig() {
 			"# noro properties\n"
 			"theme = noro\n"
 			"tabSize = 4\n"
-			"highlightColumn = false"
+			"highlightColumn = false\n"
+			"autoIndent = true"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/noro.ini")) {
@@ -361,7 +366,8 @@ void App::UpdateConfig() {
 	std::vector <std::string> requiredProperties = {
 		"theme",
 		"tabSize",
-		"highlightColumn"
+		"highlightColumn",
+		"autoIndent"
 	};
 
 	/*std::vector <std::string> props;
@@ -400,6 +406,11 @@ void App::UpdateConfig() {
 		exit(1);
 	}
 	config.tabSize = std::stoi(settings[INI::DefaultSection]["tabSize"]);
+	if (!Util::IsBool(settings[INI::DefaultSection]["autoIndent"])) {
+		fputs("[ERROR] property autoIndent is not a valid boolean\n", stderr);
+		exit(1);
+	}
+	config.autoIndent = settings.AsBoolean(INI::DefaultSection, "autoIndent");
 
 	INI::Structure <char> themeConfig;
 	try {
@@ -434,7 +445,8 @@ void App::SaveConfig() {
 		"# noro properties\n"
 		"theme = " + settings[INI::DefaultSection]["theme"] +
 		"\ntabSize = " + settings[INI::DefaultSection]["tabSize"] +
-		"\nhighlightColumn = " + settings[INI::DefaultSection]["highlightColumn"];
+		"\nhighlightColumn = " + settings[INI::DefaultSection]["highlightColumn"] +
+		"\nautoIndent = " + settings[INI::DefaultSection]["autoIndent"];
 		
 	if (settings[INI::DefaultSection]["highlightColumn"] == "true") {
 		properties +=

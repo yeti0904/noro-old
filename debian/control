@@ -1,0 +1,13 @@
+Source: noro
+Section: editors
+Priority: optional
+Maintainer: MESYETI mesyeti@mesyeti.uk
+Build-Depends: debhelper (>= 10), g++, libncurses-dev
+Standards-Version: 4.4.1
+Homepage: https://github.com/MESYETI/noro
+Vcs-Git: https://github.com/MESYETI/noro.git
+
+Package: noro
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: An easy to use customisable text editor

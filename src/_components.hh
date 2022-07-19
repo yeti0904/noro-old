@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 // C libraries
 #include <ncurses.h>
@@ -23,6 +24,11 @@ typedef int16_t input_t;
 
 // macros
 #define CTRL(x) ((x) & 0x1f)
+#define CTRL_LEFT  546
+#define CTRL_RIGHT 561
+#define CTRL_DOWN  526
+#define CTRL_UP    567
+
 #define COLOR_GREY          8
 #define COLOR_BRIGHTRED     9
 #define COLOR_BRIGHTGREEN   10

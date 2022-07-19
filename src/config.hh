@@ -5,4 +5,5 @@ struct AppConfig {
 	uint8_t tabSize;
 	bool    highlightColumn;
 	size_t  highlightedColumn;
+	bool    autoIndent;
 };
