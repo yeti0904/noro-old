@@ -41,9 +41,12 @@ void Editor::HandleInput(input_t input) {
 
 			// do indentation
 			if (parent->config->autoIndent && (cursorPosition.y > 0)) {
+				size_t indents = CountIndents(cursorPosition.y - 1);
 				fileBuffer[cursorPosition.y].insert(
-					0, CountIndents(cursorPosition.y - 1), '\t'
+					0, indents, '\t'
 				);
+
+				cursorPosition.x += indents;
 			}
 			break;
 		}
@@ -58,7 +61,7 @@ void Editor::HandleInput(input_t input) {
 				size_t lineSize = fileBuffer[cursorPosition.y].length();
 				fileBuffer.erase(fileBuffer.begin() + cursorPosition.y);
 				-- cursorPosition.y;
-				cursorPosition.x = fileBuffer[cursorPosition.y].size() - lineSize; 
+				cursorPosition.x = fileBuffer[cursorPosition.y].size() - lineSize;
 				moved = true;
 			}
 			break;
@@ -208,11 +211,12 @@ size_t Editor::CountIndents(size_t y) {
 
 	return ret;*/
 
-	return fileBuffer[y].find_first_not_of('\t', 0);
+	size_t pos = fileBuffer[y].find_first_not_of('\t');
+	return pos == std::string::npos? fileBuffer[y].length() : pos;
 }
 
 Editor::~Editor() {
-	
+
 }
 
 void Editor::OpenFile(std::string fname) {
@@ -267,5 +271,5 @@ Editor& EditorWindow::GetCurrentEditor() {
 }
 
 EditorWindow::~EditorWindow() {
-	
+
 }
