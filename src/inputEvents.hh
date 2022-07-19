@@ -12,6 +12,7 @@ namespace InputEvents {
 	void ChangeTheme(InputWindow& textbox);
 	void ChangeTabSize(InputWindow& textbox);
 	void ChangeColumnHighlighted(InputWindow& textbox);
+	void ChangeIndentType(InputWindow& textbox);
 	void RecordingMenu(InputWindow& textbox);
 	void SaveRecording(InputWindow& textbox);
 	void LoadRecording(InputWindow& textbox);

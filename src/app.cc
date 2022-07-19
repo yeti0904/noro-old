@@ -195,7 +195,9 @@ void App::Update() {
 					"Change theme",
 					"Change tab size",
 					"Toggle column highlight",
-					"Change highlighted column"
+					"Change highlighted column",
+					"Toggle auto indent",
+					"Set indent type"
 				};
 				break;
 			}

@@ -94,6 +94,31 @@ void InputEvents::Settings(InputWindow& textbox) {
 		textbox.completionCallback = InputEvents::ChangeColumnHighlighted;
 		textbox.complete           = false;
 	}
+	else if (textbox.userInput == "Toggle auto indent") {
+		app->settings[INI::DefaultSection]["autoIndent"] =
+			app->config.autoIndent? "false" : "true";
+		app->SaveConfig();
+		IOHandle::Quit();
+		app->UpdateConfig();
+		app->alert.NewAlert(
+			std::string("Set auto indent to ") +
+			(app->config.autoIndent? "true" : "false"), ALERT_TIMER
+		);
+	}
+	else if (textbox.userInput == "Set indent type") {
+		textbox.resetVars = false;
+
+		textbox.ResetVariables();
+		textbox.title              = "Set indent type";
+		textbox.content            = "";
+		textbox.inputType          = InputType::Selection;
+		textbox.buttons            = {
+			"Spaces",
+			"Tabs"
+		};
+		textbox.completionCallback = InputEvents::ChangeIndentType;
+		textbox.complete           = false;
+	}
 }
 
 void InputEvents::ChangeTheme(InputWindow& textbox) {
@@ -128,6 +153,15 @@ void InputEvents::ChangeColumnHighlighted(InputWindow& textbox) {
 	app->alert.NewAlert(
 		"Changed highlighted column to " + textbox.userInput, ALERT_TIMER
 	);
+}
+
+void InputEvents::ChangeIndentType(InputWindow& textbox) {
+	app->settings[INI::DefaultSection]["spacesIndent"] =
+		textbox.userInput == "Spaces"? "true" : "false";
+	app->SaveConfig();
+	IOHandle::Quit();
+	app->UpdateConfig();
+	app->alert.NewAlert("Changed indent type to " + textbox.userInput, ALERT_TIMER);
 }
 
 void InputEvents::RecordingMenu(InputWindow& textbox) {
