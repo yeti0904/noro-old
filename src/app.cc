@@ -278,7 +278,8 @@ void App::UpdateConfig() {
 			"theme = noro\n"
 			"tabSize = 4\n"
 			"highlightColumn = false\n"
-			"autoIndent = true"
+			"autoIndent = true\n"
+			"spacesIndent = false"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/noro.ini")) {
@@ -367,7 +368,8 @@ void App::UpdateConfig() {
 		"theme",
 		"tabSize",
 		"highlightColumn",
-		"autoIndent"
+		"autoIndent",
+		"spacesIndent"
 	};
 
 	/*std::vector <std::string> props;
@@ -411,6 +413,11 @@ void App::UpdateConfig() {
 		exit(1);
 	}
 	config.autoIndent = settings.AsBoolean(INI::DefaultSection, "autoIndent");
+	if (!Util::IsBool(settings[INI::DefaultSection]["spacesIndent"])) {
+		fputs("[ERROR] property spacesIndent is not a valid boolean", stderr);
+		exit(1);
+	}
+	config.spacesIndent = settings.AsBoolean(INI::DefaultSection, "spacesIndent");
 
 	INI::Structure <char> themeConfig;
 	try {
@@ -446,7 +453,8 @@ void App::SaveConfig() {
 		"theme = " + settings[INI::DefaultSection]["theme"] +
 		"\ntabSize = " + settings[INI::DefaultSection]["tabSize"] +
 		"\nhighlightColumn = " + settings[INI::DefaultSection]["highlightColumn"] +
-		"\nautoIndent = " + settings[INI::DefaultSection]["autoIndent"];
+		"\nautoIndent = " + settings[INI::DefaultSection]["autoIndent"] +
+		"\nspacesIndent = " + settings[INI::DefaultSection]["spacesIndent"];
 		
 	if (settings[INI::DefaultSection]["highlightColumn"] == "true") {
 		properties +=

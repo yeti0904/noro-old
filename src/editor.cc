@@ -42,8 +42,9 @@ void Editor::HandleInput(input_t input) {
 			// do indentation
 			if (parent->config->autoIndent && (cursorPosition.y > 0)) {
 				size_t indents = CountIndents(cursorPosition.y - 1);
+				char   indentChar = parent->config->spacesIndent? ' ' : '\t';
 				fileBuffer[cursorPosition.y].insert(
-					0, indents, '\t'
+					0, indents, indentChar
 				);
 
 				cursorPosition.x += indents;
@@ -86,6 +87,16 @@ void Editor::HandleInput(input_t input) {
 			moved = true;
 			break;
 		}
+		case '\t': {
+			if (parent->config->spacesIndent) {
+				fileBuffer[cursorPosition.y].insert(
+					cursorPosition.x, std::string(parent->config->tabSize, ' ')
+				);
+				cursorPosition.x += parent->config->tabSize;
+				break;
+			}
+		}
+		// fall through
 		default: {
 			InsertText(std::string(1, input));
 			moved = true;
@@ -211,7 +222,9 @@ size_t Editor::CountIndents(size_t y) {
 
 	return ret;*/
 
-	size_t pos = fileBuffer[y].find_first_not_of('\t');
+	char indentCharacter = parent->config->spacesIndent? ' ' : '\t';
+
+	size_t pos = fileBuffer[y].find_first_not_of(indentCharacter);
 	return pos == std::string::npos? fileBuffer[y].length() : pos;
 }
 
