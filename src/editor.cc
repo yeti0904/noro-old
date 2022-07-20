@@ -8,36 +8,26 @@
 
 Editor::Editor(std::string fname) {
 	// set default values
-	fileBuffer     = {""};
-	fileName       = fname == ""? "Unnamed" : fname;
-	cursorPosition = {0, 0};
-	scroll         = {0, 0};
-	title          = "Editor (" + fileName + ")";
-	saved          = true;
-
-	selection.textSelected = false;
-	selection.start        = {0, 0};
-	selection.end          = {0, 0};
+	fileBuffer        = {""};
+	fileName          = fname == ""? "Unnamed" : fname;
+	cursorPosition    = {0, 0};
+	selected          = false;
+	selectionPosition = {0, 0};
+	scroll            = {0, 0};
+	title             = "Editor (" + fileName + ")";
+	saved             = true;
 }
 
 void Editor::HandleInput(input_t input) {
 	bool moved = false;
-
-	if (
-		(input != KEY_SLEFT) &&
-		(input != KEY_SRIGHT) &&
-		(input != KEY_SUP) &&
-		(input != KEY_SDOWN)
-	) {
-		selection.textSelected = false;
-	}
-	
 	switch (input) {
 		case 0: {
 			return;
 		}
 		case '\r':
 		case '\n': {
+			DeleteSelection();
+
 			// insert if the cursor isnt at the end of the line
 			if (cursorPosition.x < fileBuffer[cursorPosition.y].length() + 1) {
 				fileBuffer.insert(
@@ -67,6 +57,11 @@ void Editor::HandleInput(input_t input) {
 		}
 		case 127: // also used for backspace key
 		case KEY_BACKSPACE: {
+			if (selected) {
+				DeleteSelection();
+				break;
+			}
+
 			if (cursorPosition.x > 0) {
 				fileBuffer[cursorPosition.y].erase(cursorPosition.x - 1, 1);
 				-- cursorPosition.x;
@@ -82,54 +77,76 @@ void Editor::HandleInput(input_t input) {
 			break;
 		}
 		case KEY_LEFT: {
+			selected = false;
+
 			CursorLeft();
 			moved = true;
 			break;
 		}
 		case KEY_RIGHT: {
+			selected = false;
+
 			CursorRight();
 			moved = true;
 			break;
 		}
 		case KEY_UP: {
+			selected = false;
+
 			CursorUp();
 			moved = true;
 			break;
 		}
 		case KEY_DOWN: {
+			selected = false;
+
 			CursorDown();
 			moved = true;
 			break;
 		}
 		case KEY_SLEFT: {
-			StartSelection();
+			if (!selected) {
+				selected = true;
+				selectionPosition = cursorPosition;
+			}
+
 			CursorLeft();
-			selection.end = cursorPosition;
-			CorrectSelection();
+			moved = true;
 			break;
 		}
 		case KEY_SRIGHT: {
-			StartSelection();
+			if (!selected) {
+				selected = true;
+				selectionPosition = cursorPosition;
+			}
+
 			CursorRight();
-			selection.end = cursorPosition;
-			CorrectSelection();
+			moved = true;
 			break;
 		}
 		case KEY_SUP: {
-			StartSelection();
+			if (!selected) {
+				selected = true;
+				selectionPosition = cursorPosition;
+			}
+
 			CursorUp();
-			selection.end = cursorPosition;
-			CorrectSelection();
+			moved = true;
 			break;
 		}
 		case KEY_SDOWN: {
-			StartSelection();
+			if (!selected) {
+				selected = true;
+				selectionPosition = cursorPosition;
+			}
+
 			CursorDown();
-			selection.end = cursorPosition;
-			CorrectSelection();
+			moved = true;
 			break;
 		}
 		case '\t': {
+			DeleteSelection();
+
 			if (parent->config->spacesIndent) {
 				fileBuffer[cursorPosition.y].insert(
 					cursorPosition.x, std::string(parent->config->tabSize, ' ')
@@ -140,6 +157,10 @@ void Editor::HandleInput(input_t input) {
 		}
 		// fall through
 		default: {
+			if (input >= ' ' && input <= '~') {
+				DeleteSelection();
+			}
+
 			InsertText(std::string(1, input));
 			moved = true;
 			break;
@@ -270,28 +291,84 @@ size_t Editor::CountIndents(size_t y) {
 	return pos == std::string::npos? fileBuffer[y].length() : pos;
 }
 
-void Editor::StartSelection() {
-	if (!selection.textSelected) {
-		selection.textSelected = true;
-		selection.start        = cursorPosition;
-		selection.end          = cursorPosition;
+Vec2& Editor::SelectionStart() {
+	if (cursorPosition.y > selectionPosition.y) {
+		return selectionPosition;
+	}
+	else if (cursorPosition.y == selectionPosition.y) {
+		if (cursorPosition.x > selectionPosition.x) {
+			return selectionPosition;
+		}
+		else {
+			return cursorPosition;
+		}
+	}
+	else {
+		return cursorPosition;
 	}
 }
 
-void Editor::CorrectSelection() {
-	Selection corrected;
-	corrected.start = selection.start;
-	corrected.end   = selection.end;
-	if (selection.start.x > selection.end.x) {
-		corrected.end.x   = selection.start.x;
-		corrected.start.x = selection.end.x;
+Vec2& Editor::SelectionEnd() {
+	return &SelectionStart() == &cursorPosition? selectionPosition : cursorPosition;
+}
+
+void Editor::DeleteSelection() {
+	if (selected) {
+		Vec2 selectionStart = SelectionStart();
+		Vec2 selectionEnd   = SelectionEnd();
+
+		if (selectionStart.y == selectionEnd.y) {
+			std::string part1 = fileBuffer[cursorPosition.y].substr(0, selectionStart.x);
+			std::string part2 = fileBuffer[cursorPosition.y].substr(selectionEnd.x);
+
+			fileBuffer[cursorPosition.y] = part1 + part2;
+			cursorPosition.x             = part1.length();
+		}
+		else {
+			fileBuffer.erase(
+				fileBuffer.begin() + selectionStart.y + 1,
+				fileBuffer.begin() + selectionEnd.y
+			);
+
+			selectionEnd.y = selectionStart.y + 1;
+
+			std::string part1 = fileBuffer[selectionStart.y].substr(0, selectionStart.x);
+			std::string part2 = fileBuffer[selectionEnd.y].substr(selectionEnd.x);
+
+			fileBuffer.erase(fileBuffer.begin() + selectionEnd.y);
+
+			cursorPosition.y             = selectionStart.y;
+			cursorPosition.x             = part1.length();
+			fileBuffer[cursorPosition.y] = part1 + part2;
+		}
+
+		selected = false;
 	}
-	if (selection.start.y > selection.end.y) {
-		corrected.end.y   = selection.start.y;
-		corrected.start.y = selection.end.y;
+}
+
+std::vector <std::string> Editor::SelectionContent() {
+	std::vector <std::string> content;
+	Vec2&                     selectionStart = SelectionStart();
+	Vec2&                     selectionEnd   = SelectionEnd();
+
+	if (selectionStart.y == selectionEnd.y) {
+		content.push_back(
+			fileBuffer[selectionStart.y].substr(
+				selectionStart.x, selectionEnd.x - selectionStart.x
+			)
+		);
 	}
-	selection.start = corrected.start;
-	selection.end   = corrected.end;
+	else {
+		content.push_back(fileBuffer[selectionStart.y].substr(selectionStart.x));
+
+		for (size_t i = selectionStart.y; i < selectionEnd.y; ++ i) {
+			content.push_back(fileBuffer[i]);
+		}
+
+		content.push_back(fileBuffer[selectionEnd.y].substr(0, selectionEnd.x));
+	}
+
+	return content;
 }
 
 Editor::~Editor() {
