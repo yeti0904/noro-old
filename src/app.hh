@@ -31,6 +31,7 @@ class App {
 		App(int argc, char** argv);
 		void Update();
 		void Render();
+		void HandleInput(input_t input);
 		~App();
 
 		// util functions

@@ -65,7 +65,8 @@ void App::Update() {
 	}
 
 	// input
-	input_t input;
+	input_t               input;
+	std::vector <input_t> inputs;
 	if (isPlayingBack) {
 		input = recordingData[playBackIterator];
 		++ playBackIterator;
@@ -73,14 +74,44 @@ void App::Update() {
 			isPlayingBack = false;
 			alert.NewAlert("Finished playing back", ALERT_TIMER);
 		}
+		inputs = {input};
 	}
 	else {
-		input = getch();
-		if (isRecording) {
-			recordingData.push_back(input);
+		input = 0;
+		while (input != -1) {
+			input = getch();
+			inputs.push_back(input);
+			if (isRecording) {
+				recordingData.push_back(input);
+			}
 		}
 	}
 
+	for (auto& oneInput : inputs) {
+		HandleInput(oneInput);
+	}
+
+	if (alert.active) {
+		alert.UpdateTimer(1000/FPSLimit);
+	}
+
+	Render();
+	usleep(1000000/FPSLimit);
+}
+
+void App::Render() {
+	Renderers::Noro::Global(*this, config);
+	Renderers::Noro::RenderEditorWindow(editorWindow, config);
+	if (alert.active) {
+		alert.Render();
+	}
+	if (textboxFocused) {
+		textbox.Render();
+	}
+	refresh();
+}
+
+void App::HandleInput(input_t input) {
 	if (textboxFocused) {
 		textbox.HandleInput(input);
 		if (textbox.complete) {
@@ -237,25 +268,6 @@ void App::Update() {
 			}
 		}
 	}
-
-	if (alert.active) {
-		alert.UpdateTimer(1000/FPSLimit);
-	}
-
-	Render();
-	usleep(1000000/FPSLimit);
-}
-
-void App::Render() {
-	Renderers::Noro::Global(*this, config);
-	Renderers::Noro::RenderEditorWindow(editorWindow, config);
-	if (alert.active) {
-		alert.Render();
-	}
-	if (textboxFocused) {
-		textbox.Render();
-	}
-	refresh();
 }
 
 App::~App() {
