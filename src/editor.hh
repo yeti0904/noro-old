@@ -17,6 +17,7 @@ class Editor {
 		bool                      saved;
 		std::string               title;
 		EditorWindow*             parent;
+		std::string               clipboard;
 
 		// functions
 		Editor(std::string fname = "");
@@ -32,6 +33,8 @@ class Editor {
 		Vec2&                     SelectionEnd();
 		void                      DeleteSelection();
 		std::vector <std::string> SelectionContent();
+		void                      Copy();
+		void                      Paste();
 		~Editor();
 
 		// util functions

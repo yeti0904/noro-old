@@ -221,6 +221,16 @@ void App::Update() {
 				};
 				break;
 			}
+			case CTRL('c'): { // copy
+				editorWindow.GetCurrentEditor().Copy();
+				alert.NewAlert("Copied content", ALERT_TIMER);
+				break;
+			}
+			case CTRL('v'): { // paste
+				editorWindow.GetCurrentEditor().Paste();
+				alert.NewAlert("Pasted content", ALERT_TIMER);
+				break;
+			}
 			default: {
 				editorWindow.editors[editorWindow.tabIndex].HandleInput(input);
 				break;

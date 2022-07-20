@@ -29,19 +29,7 @@ void Editor::HandleInput(input_t input) {
 			DeleteSelection();
 
 			// insert if the cursor isnt at the end of the line
-			if (cursorPosition.x < fileBuffer[cursorPosition.y].length() + 1) {
-				fileBuffer.insert(
-					fileBuffer.begin() + cursorPosition.y + 1,
-					fileBuffer[cursorPosition.y].substr(cursorPosition.x)
-				);
-				fileBuffer[cursorPosition.y].erase(cursorPosition.x);
-			}
-			else {
-				fileBuffer.insert(fileBuffer.begin() + cursorPosition.y + 1, "");
-			}
-			++ cursorPosition.y;
-			cursorPosition.x = 0;
-			moved = true;
+			InsertText("\n");
 
 			// do indentation
 			if (parent->config->autoIndent && (cursorPosition.y > 0)) {
@@ -260,15 +248,34 @@ void Editor::CursorRight() {
 
 void Editor::InsertText(std::string text) {
 	for (auto& input : text) {
-		if (((input >= ' ') && (input <= '~')) || (input == '\t')) {
-			if (saved) {
-				title = "Editor (" + fileName + ") +";
+		switch (input) {
+			case '\n': {
+				if (cursorPosition.x < fileBuffer[cursorPosition.y].length() + 1) {
+					fileBuffer.insert(
+						fileBuffer.begin() + cursorPosition.y + 1,
+						fileBuffer[cursorPosition.y].substr(cursorPosition.x)
+					);
+					fileBuffer[cursorPosition.y].erase(cursorPosition.x);
+				}
+				else {
+					fileBuffer.insert(fileBuffer.begin() + cursorPosition.y + 1, "");
+				}
+				++ cursorPosition.y;
+				cursorPosition.x = 0;
+				break;
 			}
-			fileBuffer[cursorPosition.y].insert(
-				cursorPosition.x, std::string(1, input)
-			);
-			++ cursorPosition.x;
-			saved = false;
+			default: {
+				if (((input >= ' ') && (input <= '~')) || (input == '\t')) {
+					if (saved) {
+						title = "Editor (" + fileName + ") +";
+					}
+					fileBuffer[cursorPosition.y].insert(
+						cursorPosition.x, std::string(1, input)
+					);
+					++ cursorPosition.x;
+					saved = false;
+				}
+			}
 		}
 	}
 }
@@ -369,6 +376,24 @@ std::vector <std::string> Editor::SelectionContent() {
 	}
 
 	return content;
+}
+
+void Editor::Copy() {
+	std::vector <std::string> selection = SelectionContent();
+
+	clipboard = "";
+	
+	for (auto& line : selection) {
+		clipboard += line + '\n';
+	}
+
+	if (selection.size() > 0) {
+		clipboard.erase(clipboard.length() - 1, 1);
+	}
+}
+
+void Editor::Paste() {
+	InsertText(clipboard);
 }
 
 Editor::~Editor() {

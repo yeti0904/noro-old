@@ -15,6 +15,8 @@
 | Ctrl + T   | Suspend to terminal        |
 | Ctrl + Y   | Open settings menu         |
 | Ctrl + R   | Reload noro                |
+| Ctrl + C   | Copy                       |
+| Ctrl + V   | Paste                      |
 
 ## textbox windows
 | Key        | Action                     |
