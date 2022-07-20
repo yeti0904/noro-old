@@ -17,6 +17,7 @@
 | Ctrl + R   | Reload noro                |
 | Ctrl + C   | Copy                       |
 | Ctrl + V   | Paste                      |
+| Ctrl + X   | Cut                        |
 
 ## textbox windows
 | Key        | Action                     |

@@ -376,18 +376,28 @@ std::vector <std::string> Editor::SelectionContent() {
 	return content;
 }
 
-void Editor::Copy() {
+std::string Editor::SelectionContentString() {
+	std::string               ret;
 	std::vector <std::string> selection = SelectionContent();
-
-	clipboard = "";
 	
 	for (auto& line : selection) {
-		clipboard += line + '\n';
+		ret += line + '\n';
 	}
 
 	if (selection.size() > 0) {
-		clipboard.erase(clipboard.length() - 1, 1);
+		ret.erase(ret.length() - 1, 1);
 	}
+
+	return ret;
+}
+
+void Editor::Copy() {
+	clipboard = SelectionContentString();
+}
+
+void Editor::Cut() {
+	clipboard = SelectionContentString();
+	DeleteSelection();
 }
 
 void Editor::Paste() {

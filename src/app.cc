@@ -254,12 +254,17 @@ void App::HandleInput(input_t input) {
 			}
 			case CTRL('c'): { // copy
 				editorWindow.GetCurrentEditor().Copy();
-				alert.NewAlert("Copied content", ALERT_TIMER);
+				alert.NewAlert("Copied selection", ALERT_TIMER);
+				break;
+			}
+			case CTRL('x'): { // cut
+				editorWindow.GetCurrentEditor().Cut();
+				alert.NewAlert("Cut selection", ALERT_TIMER);
 				break;
 			}
 			case CTRL('v'): { // paste
 				editorWindow.GetCurrentEditor().Paste();
-				alert.NewAlert("Pasted content", ALERT_TIMER);
+				alert.NewAlert("Pasted contents of clipboard", ALERT_TIMER);
 				break;
 			}
 			default: {

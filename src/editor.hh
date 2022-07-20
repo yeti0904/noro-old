@@ -33,7 +33,9 @@ class Editor {
 		Vec2&                     SelectionEnd();
 		void                      DeleteSelection();
 		std::vector <std::string> SelectionContent();
+		std::string               SelectionContentString();
 		void                      Copy();
+		void                      Cut();
 		void                      Paste();
 		~Editor();
 
