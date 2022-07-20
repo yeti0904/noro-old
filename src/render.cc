@@ -79,6 +79,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 		attroff(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
 	}
 
+	bool inSelection = false;
 	for (size_t i = editor.scroll.y;
 		(i - editor.scroll.y < (editorWindow.size.y - 2)) &&
 		(i < editor.fileBuffer.size());
@@ -106,9 +107,31 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 			(j <= editor.fileBuffer[i].length() + lineExtendLength) &&
 			(j - editor.scroll.x < editorWindow.size.x);
 		++j) {
+			if (
+				!inSelection &&
+				(i == editor.selection.start.y) &&
+				(j == editor.selection.start.x)
+			) {
+				inSelection = true;
+				attron(A_REVERSE);
+			}
+			if (
+				inSelection &&
+				(i == editor.selection.end.y) &&
+				(j == editor.selection.end.x)
+			) {
+				inSelection = false;
+				attroff(A_REVERSE);
+			}
+		
 			attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 			if ((i == editor.cursorPosition.y) && (j == cursorX)) {
-				attron(A_REVERSE);
+				if (inSelection) {
+					attroff(A_REVERSE);
+				}
+				else {
+					attron(A_REVERSE);
+				}
 			}
 			else if (
 				config.highlightColumn && 
@@ -140,7 +163,12 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 			}
 
 			if ((i == editor.cursorPosition.y) && (j == cursorX)) {
-				attroff(A_REVERSE);
+				if (inSelection) {
+					attron(A_REVERSE);
+				}
+				else {
+					attroff(A_REVERSE);
+				}
 			}
 			else if (
 				config.highlightColumn && 
@@ -152,6 +180,9 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 		}
 	}
 
+	if (inSelection) {
+		attroff(A_REVERSE);
+	}
 	attroff(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 
 	// render tab bar

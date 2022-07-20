@@ -5,6 +5,11 @@
 
 class EditorWindow;
 
+struct Selection {
+	bool textSelected;
+	Vec2 start, end;
+};
+
 class Editor {
 	public:
 		// variables
@@ -15,6 +20,7 @@ class Editor {
 		bool                      saved;
 		std::string               title;
 		EditorWindow*             parent;
+		Selection                 selection;
 
 		// functions
 		Editor(std::string fname = "");
@@ -26,6 +32,8 @@ class Editor {
 		void   UpdateScroll();
 		void   InsertText(std::string text);
 		size_t CountIndents(size_t y);
+		void   StartSelection();
+		void   CorrectSelection();
 		~Editor();
 
 		// util functions

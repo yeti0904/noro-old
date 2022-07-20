@@ -14,10 +14,24 @@ Editor::Editor(std::string fname) {
 	scroll         = {0, 0};
 	title          = "Editor (" + fileName + ")";
 	saved          = true;
+
+	selection.textSelected = false;
+	selection.start        = {0, 0};
+	selection.end          = {0, 0};
 }
 
 void Editor::HandleInput(input_t input) {
 	bool moved = false;
+
+	if (
+		(input != KEY_SLEFT) &&
+		(input != KEY_SRIGHT) &&
+		(input != KEY_SUP) &&
+		(input != KEY_SDOWN)
+	) {
+		selection.textSelected = false;
+	}
+	
 	switch (input) {
 		case 0: {
 			return;
@@ -85,6 +99,34 @@ void Editor::HandleInput(input_t input) {
 		case KEY_DOWN: {
 			CursorDown();
 			moved = true;
+			break;
+		}
+		case KEY_SLEFT: {
+			StartSelection();
+			CursorLeft();
+			selection.end = cursorPosition;
+			CorrectSelection();
+			break;
+		}
+		case KEY_SRIGHT: {
+			StartSelection();
+			CursorRight();
+			selection.end = cursorPosition;
+			CorrectSelection();
+			break;
+		}
+		case KEY_SUP: {
+			StartSelection();
+			CursorUp();
+			selection.end = cursorPosition;
+			CorrectSelection();
+			break;
+		}
+		case KEY_SDOWN: {
+			StartSelection();
+			CursorDown();
+			selection.end = cursorPosition;
+			CorrectSelection();
 			break;
 		}
 		case '\t': {
@@ -226,6 +268,30 @@ size_t Editor::CountIndents(size_t y) {
 
 	size_t pos = fileBuffer[y].find_first_not_of(indentCharacter);
 	return pos == std::string::npos? fileBuffer[y].length() : pos;
+}
+
+void Editor::StartSelection() {
+	if (!selection.textSelected) {
+		selection.textSelected = true;
+		selection.start        = cursorPosition;
+		selection.end          = cursorPosition;
+	}
+}
+
+void Editor::CorrectSelection() {
+	Selection corrected;
+	corrected.start = selection.start;
+	corrected.end   = selection.end;
+	if (selection.start.x > selection.end.x) {
+		corrected.end.x   = selection.start.x;
+		corrected.start.x = selection.end.x;
+	}
+	if (selection.start.y > selection.end.y) {
+		corrected.end.y   = selection.start.y;
+		corrected.start.y = selection.end.y;
+	}
+	selection.start = corrected.start;
+	selection.end   = corrected.end;
 }
 
 Editor::~Editor() {
