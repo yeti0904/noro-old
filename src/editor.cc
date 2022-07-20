@@ -176,22 +176,22 @@ void Editor::UpdateScroll() {
 			}
 		}
 	}
-	if ((ssize_t) cursorX - (ssize_t) scroll.x < 0) {
+	while ((ssize_t) cursorX - (ssize_t) scroll.x < 0) {
 		-- scroll.x;
 		if (cursorX < scroll.x) {
 			scroll.x = cursorX;
 		}
 	}
-	else if (cursorX - scroll.x > parent->size.x - 1) {
+	while (cursorX - scroll.x > parent->size.x - 1) {
 		++ scroll.x;
 		if (cursorX > scroll.x) {
 			scroll.x = (cursorX - parent->size.x) + 1;
 		}
 	}
-	if ((ssize_t) cursorPosition.y - (ssize_t) scroll.y < 0) {
+	while ((ssize_t) cursorPosition.y - (ssize_t) scroll.y < 0) {
 		-- scroll.y;
 	}
-	else if (cursorPosition.y - scroll.y > parent->size.y - 3) {
+	while (cursorPosition.y - scroll.y > parent->size.y - 3) {
 		++ scroll.y;
 	}
 }
