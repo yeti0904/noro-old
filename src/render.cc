@@ -173,6 +173,10 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 		}
 	}
 
+	if (inSelection) {
+		attroff(A_REVERSE);
+	}
+
 	attroff(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 
 	// render tab bar

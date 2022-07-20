@@ -145,9 +145,6 @@ void Editor::HandleInput(input_t input) {
 		}
 		// fall through
 		default: {
-			if (input >= ' ' && input <= '~') {
-				DeleteSelection();
-			}
 
 			InsertText(std::string(1, input));
 			moved = true;
@@ -266,6 +263,7 @@ void Editor::InsertText(std::string text) {
 			}
 			default: {
 				if (((input >= ' ') && (input <= '~')) || (input == '\t')) {
+					DeleteSelection();
 					if (saved) {
 						title = "Editor (" + fileName + ") +";
 					}
