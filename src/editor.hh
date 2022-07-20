@@ -5,35 +5,33 @@
 
 class EditorWindow;
 
-struct Selection {
-	bool textSelected;
-	Vec2 start, end;
-};
-
 class Editor {
 	public:
 		// variables
 		std::vector <std::string> fileBuffer;
 		std::string               fileName;
 		Vec2                      cursorPosition;
+		Vec2                      selectionPosition;
+		bool                      selected;
 		Vec2                      scroll;
 		bool                      saved;
 		std::string               title;
 		EditorWindow*             parent;
-		Selection                 selection;
 
 		// functions
 		Editor(std::string fname = "");
-		void   HandleInput(input_t input);
-		void   CursorUp();
-		void   CursorDown();
-		void   CursorLeft();
-		void   CursorRight();
-		void   UpdateScroll();
-		void   InsertText(std::string text);
-		size_t CountIndents(size_t y);
-		void   StartSelection();
-		void   CorrectSelection();
+		void                      HandleInput(input_t input);
+		void                      CursorUp();
+		void                      CursorDown();
+		void                      CursorLeft();
+		void                      CursorRight();
+		void                      UpdateScroll();
+		void                      InsertText(std::string text);
+		size_t                    CountIndents(size_t y);
+		Vec2&                     SelectionStart();
+		Vec2&                     SelectionEnd();
+		void                      DeleteSelection();
+		std::vector <std::string> SelectionContent();
 		~Editor();
 
 		// util functions
