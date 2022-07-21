@@ -63,7 +63,7 @@ input_t Util::FixInput(input_t input) {
 			sequence.push_back(input);
 		} while (input != -1);
 
-		if (sequence.size() == 6) {
+		if (sequence.size() == 7) { // 7 because -1 included
 			if (
 				(sequence[1] == '[') && (sequence[2] == '1') && (sequence[3] == ';')
 			) {
