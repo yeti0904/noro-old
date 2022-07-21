@@ -92,6 +92,10 @@ input_t Util::FixInput(input_t input) {
 	return input;
 }
 
+bool Util::IsWordChar(char ch) {
+	return (ch == '_') || isalnum(ch);
+}
+
 std::vector <std::string> Util::GetThemes() {
 	std::vector <std::string> themes;
 	DIR*                      dhnd;

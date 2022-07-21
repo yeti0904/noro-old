@@ -252,29 +252,46 @@ void Editor::CursorRight() {
 }
 
 void Editor::CursorWordLeft() {
-	do {
-		Vec2 oldPos = cursorPosition;
-		CursorLeft();
-		if ((cursorPosition.x == oldPos.x) && (cursorPosition.y == oldPos.y)) {
+	// based on code from LordOfTrident's pona
+	CursorLeft();
+
+	while (isspace(fileBuffer[cursorPosition.y][cursorPosition.x])) {
+		if (cursorPosition.x == 0) {
 			return;
 		}
-	} while (!Util::CharacterMassCompare(
-		fileBuffer[cursorPosition.y][cursorPosition.x],
-		" \0\t"
-	));
+		CursorLeft();
+	}
+
+	CursorLeft();
+	while (Util::IsWordChar(fileBuffer[cursorPosition.y][cursorPosition.x])) {
+		if (cursorPosition.x == 0) {
+			return;
+		}
+		if (Util::IsWordChar(fileBuffer[cursorPosition.y][cursorPosition.x])) {
+			CursorLeft();
+		}
+	}
+
+	CursorRight();
 }
 
 void Editor::CursorWordRight() {
-	do {
-		Vec2 oldPos = cursorPosition;
+	while (isspace(fileBuffer[cursorPosition.y][cursorPosition.x])) {
 		CursorRight();
-		if ((cursorPosition.x == oldPos.x) && (cursorPosition.y == oldPos.y)) {
+		if (cursorPosition.x >= fileBuffer[cursorPosition.y].length()) {
 			return;
 		}
-	} while (!Util::CharacterMassCompare(
-		fileBuffer[cursorPosition.y][cursorPosition.x],
-		" \0\t"
-	));
+	}
+
+	do {
+		if (cursorPosition.x >= fileBuffer[cursorPosition.y].length()) {
+			CursorRight();
+
+			return;
+		}
+
+		CursorRight();
+	} while (Util::IsWordChar(fileBuffer[cursorPosition.y][cursorPosition.x]));
 }
 
 void Editor::InsertText(std::string text) {

@@ -10,6 +10,7 @@ namespace Util {
 	bool                      StringEndsWith(std::string src, std::string suffix);
 	bool                      CharacterMassCompare(char ch, std::string compares);
 	input_t                   FixInput(input_t input);
+	bool                      IsWordChar(char ch);
 	std::vector <std::string> GetThemes();
 	std::vector <std::string> GetRecordings();
 }
