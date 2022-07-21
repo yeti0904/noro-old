@@ -7,4 +7,5 @@ struct AppConfig {
 	size_t  highlightedColumn;
 	bool    autoIndent;
 	bool    spacesIndent;
+	bool    highlightLine;
 };

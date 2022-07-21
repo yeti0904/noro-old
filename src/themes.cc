@@ -23,7 +23,8 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 		"alertFG",           "alertBG",
 		"tabFG",             "tabBG",
 		"activeTabFG",       "activeTabBG",
-		"columnHighlightFG", "columnHighlightBG"
+		"columnHighlightFG", "columnHighlightBG",
+		"lineHighlight"
 	};
 
 	for (size_t i = 0; i < requiredProperties.size(); ++i) {
@@ -50,6 +51,8 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 
 	activeTab.fg       = StringToColour(properties[INI::DefaultSection]["activeTabFG"]);
 	activeTab.bg       = StringToColour(properties[INI::DefaultSection]["activeTabBG"]);
+
+	lineHighlight      = StringToColour(properties[INI::DefaultSection]["lineHighlight"]);
 
 	columnHighlight.fg = StringToColour(
 		properties[INI::DefaultSection]["columnHighlightFG"]

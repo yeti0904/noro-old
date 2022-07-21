@@ -4,6 +4,7 @@
 struct ColourPair {
 	int fg, bg;
 };
+typedef int Colour;
 
 class Theme {
 	public:
@@ -14,6 +15,7 @@ class Theme {
 		ColourPair tabs;
 		ColourPair activeTab;
 		ColourPair columnHighlight;
+		Colour     lineHighlight;
 
 		// functions
 		Theme();

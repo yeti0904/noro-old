@@ -349,7 +349,7 @@ void InputWindow::Render() {
 			if (selectionScroll > 0) {
 				mvaddch(position.y, position.x + (size.x - 1), ACS_UARROW);
 			}
-			if (selectionScroll + size.y - 2 < buttons.size()) {
+			if (selectionScroll + size.y - 1 < buttons.size()) {
 				mvaddch(position.y + size.y, position.x + size.x - 1, ACS_DARROW);
 			}
 			break;

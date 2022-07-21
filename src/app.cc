@@ -308,7 +308,8 @@ void App::UpdateConfig() {
 			"tabSize = 4\n"
 			"highlightColumn = false\n"
 			"autoIndent = true\n"
-			"spacesIndent = false"
+			"spacesIndent = false\n"
+			"highlightLine = true"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/noro.ini")) {
@@ -325,7 +326,8 @@ void App::UpdateConfig() {
 			"activeTabFG = cyan\n"
 			"activeTabBG = black\n"
 			"columnHighlightFG = black\n"
-			"columnHighlightBG = cyan"
+			"columnHighlightBG = cyan\n"
+			"lineHighlight = blue"
 		);
 		
 	}
@@ -343,7 +345,26 @@ void App::UpdateConfig() {
 			"activeTabFG = green\n"
 			"activeTabBG = black\n"
 			"columnHighlightFG = black\n"
-			"columnHighlightBG = green"
+			"columnHighlightBG = green\n"
+			"lineHighlight = green"
+		);
+	}
+	if (!FS::File::Exists(home + "/.config/noro/themes/dark16.ini")) {
+		FS::File::Write(home + "/.config/noro/themes/dark16.ini",
+			"# dark16 theme\n"
+			"editorFG = white\n"
+			"editorBG = black\n"
+			"titlebarFG = black\n"
+			"titlebarBG = cyan\n"
+			"alertFG = black\n"
+			"alertBG = green\n"
+			"tabFG = black\n"
+			"tabBG = green\n"
+			"activeTabFG = green\n"
+			"activeTabBG = black\n"
+			"columnHighlightFG = white\n"
+			"columnHighlightBG = grey\n"
+			"lineHighlight = grey"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/mono.ini")) {
@@ -360,7 +381,8 @@ void App::UpdateConfig() {
 			"activeTabFG = white\n"
 			"activeTabBG = black\n"
 			"columnHighlightFG = black\n"
-			"columnHighlightBG = white"
+			"columnHighlightBG = white\n"
+			"lineHighlight = black"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/gruvy.ini")) {
@@ -378,7 +400,8 @@ void App::UpdateConfig() {
 			"activeTabFG = brightgreen\n"
 			"activeTabBG = default\n"
 			"columnHighlightFG = white\n"
-			"columnHighlightBG = grey"
+			"columnHighlightBG = grey\n"
+			"lineHighlight = grey"
 		);
 	}
 
@@ -398,7 +421,8 @@ void App::UpdateConfig() {
 		"tabSize",
 		"highlightColumn",
 		"autoIndent",
-		"spacesIndent"
+		"spacesIndent",
+		"highlightLine"
 	};
 
 	/*std::vector <std::string> props;
@@ -447,6 +471,11 @@ void App::UpdateConfig() {
 		exit(1);
 	}
 	config.spacesIndent = settings.AsBoolean(INI::DefaultSection, "spacesIndent");
+	if (!Util::IsBool(settings[INI::DefaultSection]["highlightLine"])) {
+		fputs("[ERROR] property highlightLine is not a valid boolean", stderr);
+		exit(1);
+	}
+	config.highlightLine = settings.AsBoolean(INI::DefaultSection, "highlightLine");
 
 	INI::Structure <char> themeConfig;
 	try {
@@ -483,7 +512,8 @@ void App::SaveConfig() {
 		"\ntabSize = " + settings[INI::DefaultSection]["tabSize"] +
 		"\nhighlightColumn = " + settings[INI::DefaultSection]["highlightColumn"] +
 		"\nautoIndent = " + settings[INI::DefaultSection]["autoIndent"] +
-		"\nspacesIndent = " + settings[INI::DefaultSection]["spacesIndent"];
+		"\nspacesIndent = " + settings[INI::DefaultSection]["spacesIndent"] +
+		"\nhighlightLine = " + settings[INI::DefaultSection]["highlightLine"];
 		
 	if (settings[INI::DefaultSection]["highlightColumn"] == "true") {
 		properties +=

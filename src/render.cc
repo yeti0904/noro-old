@@ -104,11 +104,29 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 				}
 			}
 		}
+
+		bool highlightLine = false;
+		if (config.highlightLine && (i == editor.cursorPosition.y)) {
+			attron(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
+			mvhline(
+				(editorWindow.position.y + i) - editor.scroll.y, 
+				editorWindow.position.x,
+				' ', editorWindow.size.x
+			);
+			highlightLine = true;
+		}
+		
 		move((editorWindow.position.y + i) - editor.scroll.y, editorWindow.position.x);
 		for (size_t j = editor.scroll.x;
 			(j <= editor.fileBuffer[i].length() + lineExtendLength) &&
 			(j - editor.scroll.x < editorWindow.size.x);
 		++j) {
+			if (highlightLine) {
+				attron(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
+			}
+			else {
+				attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
+			}
 			if (
 				editor.selected &&
 				!inSelection &&
@@ -116,6 +134,10 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 				(j == selectionStart.x)
 			) {
 				inSelection = true;
+				if (highlightLine) {
+					attroff(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
+					attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
+				}
 				attron(A_REVERSE);
 			}
 			if (
@@ -125,9 +147,12 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 			) {
 				inSelection = false;
 				attroff(A_REVERSE);
+				if (highlightLine) {
+					attroff(COLOR_PAIR(COLOUR_PAIR_EDITOR));
+					attron(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
+				}
 			}
 
-			attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 			if ((i == editor.cursorPosition.y) && (j == cursorX)) {
 				attron(A_REVERSE);
 			}
@@ -135,7 +160,12 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 				config.highlightColumn &&
 				(j - editor.scroll.x == config.highlightedColumn)
 			) {
-				attroff(COLOR_PAIR(COLOUR_PAIR_EDITOR));
+				if (highlightLine) {
+					attroff(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
+				}
+				else {
+					attroff(COLOR_PAIR(COLOUR_PAIR_EDITOR));
+				}
 				attron(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
 			}
 
@@ -168,7 +198,12 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 				(j - editor.scroll.x == config.highlightedColumn)
 			) {
 				attroff(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
-				attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
+				if (highlightLine) {
+					attron(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
+				}
+				else {
+					attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
+				}
 			}
 		}
 	}
