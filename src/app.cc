@@ -79,7 +79,7 @@ void App::Update() {
 	else {
 		input = 0;
 		while (input != -1) {
-			input = getch();
+			input = Util::FixInput(getch());
 			inputs.push_back(input);
 			if (isRecording) {
 				recordingData.push_back(input);
@@ -88,7 +88,7 @@ void App::Update() {
 	}
 
 	for (auto& oneInput : inputs) {
-		HandleInput(Util::FixInput(oneInput));
+		HandleInput(oneInput);
 	}
 
 	if (alert.active) {
