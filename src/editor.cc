@@ -253,7 +253,11 @@ void Editor::CursorRight() {
 
 void Editor::CursorWordLeft() {
 	do {
+		Vec2 oldPos = cursorPosition;
 		CursorLeft();
+		if ((cursorPosition.x == oldPos.x) && (cursorPosition.y == oldPos.y)) {
+			return;
+		}
 	} while (!Util::CharacterMassCompare(
 		fileBuffer[cursorPosition.y][cursorPosition.x],
 		" \0\t"
@@ -262,7 +266,11 @@ void Editor::CursorWordLeft() {
 
 void Editor::CursorWordRight() {
 	do {
+		Vec2 oldPos = cursorPosition;
 		CursorRight();
+		if ((cursorPosition.x == oldPos.x) && (cursorPosition.y == oldPos.y)) {
+			return;
+		}
 	} while (!Util::CharacterMassCompare(
 		fileBuffer[cursorPosition.y][cursorPosition.x],
 		" \0\t"
