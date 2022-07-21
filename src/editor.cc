@@ -132,6 +132,14 @@ void Editor::HandleInput(input_t input) {
 			moved = true;
 			break;
 		}
+		case CTRL_LEFT: {
+			CursorWordLeft();
+			break;
+		}
+		case CTRL_RIGHT: {
+			CursorWordRight();
+			break;
+		}
 		case '\t': {
 			DeleteSelection();
 
@@ -241,6 +249,24 @@ void Editor::CursorRight() {
 		++ cursorPosition.y;
 		cursorPosition.x = 0;
 	}
+}
+
+void Editor::CursorWordLeft() {
+	do {
+		CursorLeft();
+	} while (!Util::CharacterMassCompare(
+		fileBuffer[cursorPosition.y][cursorPosition.x],
+		" \0\t"
+	));
+}
+
+void Editor::CursorWordRight() {
+	do {
+		CursorRight();
+	} while (!Util::CharacterMassCompare(
+		fileBuffer[cursorPosition.y][cursorPosition.x],
+		" \0\t"
+	));
 }
 
 void Editor::InsertText(std::string text) {

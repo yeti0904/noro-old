@@ -45,6 +45,53 @@ bool Util::StringEndsWith(std::string src, std::string suffix) {
 	return true;
 }
 
+bool Util::CharacterMassCompare(char ch, std::string compares) {
+	for (auto& compare : compares) {
+		if (compare == ch) {
+			return true;
+		}
+	}
+	return false;
+}
+
+input_t Util::FixInput(input_t input) {
+	if (input == 27) {
+		std::vector <input_t> sequence = {input};
+		input = -1;
+		do {
+			input = getch();
+			sequence.push_back(input);
+		} while (input != -1);
+
+		if (sequence.size() == 6) {
+			if (
+				(sequence[1] == '[') && (sequence[2] == '1') && (sequence[3] == ';')
+			) {
+				switch (sequence[4]) {
+					case '5': {
+						// CTRL + arrow key
+						switch (sequence[5]) {
+							case 'A': {
+								return CTRL_UP;
+							}
+							case 'B': {
+								return CTRL_DOWN;
+							}
+							case 'C': {
+								return CTRL_RIGHT;
+							}
+							case 'D': {
+								return CTRL_LEFT;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return input;
+}
+
 std::vector <std::string> Util::GetThemes() {
 	std::vector <std::string> themes;
 	DIR*                      dhnd;

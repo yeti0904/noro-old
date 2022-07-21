@@ -26,6 +26,8 @@ class Editor {
 		void                      CursorDown();
 		void                      CursorLeft();
 		void                      CursorRight();
+		void                      CursorWordLeft();
+		void                      CursorWordRight();
 		void                      UpdateScroll();
 		void                      InsertText(std::string text);
 		size_t                    CountIndents(size_t y);
