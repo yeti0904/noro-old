@@ -8,4 +8,5 @@ struct AppConfig {
 	bool    autoIndent;
 	bool    spacesIndent;
 	bool    highlightLine;
+	bool    ruler;
 };

@@ -13,4 +13,5 @@ namespace Util {
 	bool                      IsWordChar(char ch);
 	std::vector <std::string> GetThemes();
 	std::vector <std::string> GetRecordings();
+	size_t                    GetDigits(size_t number);
 }

@@ -130,6 +130,17 @@ void InputEvents::Settings(InputWindow& textbox) {
 			(app->config.highlightLine? "on" : "off"), ALERT_TIMER
 		);
 	}
+	else if (textbox.userInput == "Toggle line numbers") {
+		app->settings[INI::DefaultSection]["ruler"] =
+			app->config.ruler? "false" : "true";
+		app->SaveConfig();
+		IOHandle::Quit();
+		app->UpdateConfig();
+		app->alert.NewAlert(
+			std::string("Ruler is now ") +
+			(app->config.ruler? "on" : "off"), ALERT_TIMER
+		);
+	}
 }
 
 void InputEvents::ChangeTheme(InputWindow& textbox) {

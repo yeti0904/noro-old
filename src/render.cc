@@ -3,6 +3,7 @@
 #include "colourpairs.hh"
 #include "constants.hh"
 #include "app.hh"
+#include "util.hh"
 
 uint8_t tabSize;
 
@@ -12,7 +13,7 @@ void Renderers::Noro::Global(App& app, AppConfig&) {
 
 	// clear screen
 	for (int i = 0; i < LINES; ++i) {
-		mvhline(i, 0, 'c', COLS);
+		mvhline(i, 0, ' ', COLS);
 	}
 
 	// render title/bottom bar
@@ -179,7 +180,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 			}
 			else if (
 				config.highlightColumn &&
-				(j - editor.scroll.x == config.highlightedColumn)
+				(j == config.highlightedColumn)
 			) {
 				if (highlightLine) {
 					attroff(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
@@ -216,7 +217,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 			}
 			else if (
 				config.highlightColumn &&
-				(j - editor.scroll.x == config.highlightedColumn)
+				(j == config.highlightedColumn)
 			) {
 				attroff(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
 				if (highlightLine) {
@@ -271,4 +272,25 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 	}
 	endTabBarRendering:
 		attroff(COLOR_PAIR(COLOUR_PAIR_TABS));
+}
+
+size_t Renderers::Noro::RulerSize(EditorWindow& window) {
+	return Util::GetDigits(window.GetCurrentEditor().fileBuffer.size()) + 2;
+}
+
+void Renderers::Noro::RenderRuler(EditorWindow& editorWindow) {
+	Editor editor = editorWindow.GetCurrentEditor();
+	mvvline(1, Renderers::Noro::RulerSize(editorWindow) - 1, ACS_VLINE, LINES - 2);
+	for (size_t i = editor.scroll.y; i - editor.scroll.y < (size_t) LINES - 2; ++i) {
+		if (i >= editor.fileBuffer.size()) {
+			break;
+		}
+		if (i == editor.cursorPosition.y) {
+			attron(A_BOLD);
+		}
+		mvprintw((i - editor.scroll.y) + 1, 0, "%i", (int) i + 1);
+		if (i == editor.cursorPosition.y) {
+			attroff(A_BOLD);
+		}
+	}
 }

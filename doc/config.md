@@ -8,3 +8,4 @@
 - `autoIndent` (boolean) - when enabled, automatically adds the same amount as indents as the previous line when you press enter. default: `true`
 - `spacesIndent` (boolean) - when enabled, adds space characters when you press the tab key. when disabled, adds tab characters when you press the tab key. default: `false`
 - `highlightLine` (boolean) - when enabled, highlights the current line the cursor is on
+- `ruler` (boolean) - when enabled, the editor window will be moved to make space for line numebrs

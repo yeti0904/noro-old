@@ -20,6 +20,7 @@ App::App(int argc, char** argv) {
 	isPlayingBack            = false;
 	playBackIterator         = 0;
 	config.highlightedColumn = 0;
+	config.ruler             = true;
 	
 	for (int i = 0; i < argc; ++i) {
 		args.push_back(argv[i]);
@@ -60,6 +61,11 @@ void App::Update() {
 	if (editorWindow.maximised) {
 		editorWindow.position = {0, 1};
 		editorWindow.size = {(size_t)COLS, (size_t)LINES - 1};
+		if (config.ruler) {
+			size_t rulerOffset = Renderers::Noro::RulerSize(editorWindow);
+			editorWindow.size.x     -= rulerOffset;
+			editorWindow.position.x += rulerOffset;
+		}
 		// editorWindow.position = {3, 3};
 		// editorWindow.size = {20, 10};
 	}
@@ -105,6 +111,9 @@ void App::Update() {
 void App::Render() {
 	Renderers::Noro::Global(*this, config);
 	Renderers::Noro::RenderEditorWindow(editorWindow, config);
+	if (config.ruler) {
+		Renderers::Noro::RenderRuler(editorWindow);
+	}
 	if (alert.active) {
 		alert.Render();
 	}
@@ -232,7 +241,8 @@ void App::HandleInput(input_t input) {
 					"Change highlighted column",
 					"Toggle auto indent",
 					"Set indent type",
-					"Toggle line highlighting"
+					"Toggle line highlighting",
+					"Toggle line numbers"
 				};
 				break;
 			}
@@ -313,7 +323,8 @@ void App::UpdateConfig() {
 			"highlightColumn = false\n"
 			"autoIndent = true\n"
 			"spacesIndent = false\n"
-			"highlightLine = true"
+			"highlightLine = true\n"
+			"ruler = false"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/noro.ini")) {
@@ -426,7 +437,8 @@ void App::UpdateConfig() {
 		"highlightColumn",
 		"autoIndent",
 		"spacesIndent",
-		"highlightLine"
+		"highlightLine",
+		"ruler"
 	};
 
 	/*std::vector <std::string> props;
@@ -480,6 +492,11 @@ void App::UpdateConfig() {
 		exit(1);
 	}
 	config.highlightLine = settings.AsBoolean(INI::DefaultSection, "highlightLine");
+	if (!Util::IsBool(settings[INI::DefaultSection]["ruler"])) {
+		fputs("[ERROR] property ruler is not a valid boolean", stderr);
+		exit(1);
+	}
+	config.ruler = settings.AsBoolean(INI::DefaultSection, "ruler");
 
 	INI::Structure <char> themeConfig;
 	try {
@@ -517,7 +534,8 @@ void App::SaveConfig() {
 		"\nhighlightColumn = " + settings[INI::DefaultSection]["highlightColumn"] +
 		"\nautoIndent = " + settings[INI::DefaultSection]["autoIndent"] +
 		"\nspacesIndent = " + settings[INI::DefaultSection]["spacesIndent"] +
-		"\nhighlightLine = " + settings[INI::DefaultSection]["highlightLine"];
+		"\nhighlightLine = " + settings[INI::DefaultSection]["highlightLine"] +
+		"\nruler = " + settings[INI::DefaultSection]["ruler"];
 		
 	if (settings[INI::DefaultSection]["highlightColumn"] == "true") {
 		properties +=

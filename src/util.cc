@@ -158,3 +158,7 @@ std::vector <std::string> Util::GetRecordings() {
 
 	return recordings;
 }
+
+size_t Util::GetDigits(size_t number) {
+	return std::to_string(number).length();
+}
