@@ -182,6 +182,7 @@ void Editor::HandleInput(input_t input) {
 						}
 					}
 				}
+				moved = true;
 				break;
 			}
 		}
@@ -209,6 +210,7 @@ void Editor::HandleInput(input_t input) {
 						fileBuffer[i].insert(0, 1, '\t');
 					}
 				}
+				moved = true;
 				break;
 			}
 		}
