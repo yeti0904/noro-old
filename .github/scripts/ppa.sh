@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#!/bin/bash
+
+sudo apt install -y devscripts dput debhelper
+
+CHANNELS=( bionic focal jammy ) # TODO: Use Launchpad API to get supported Ubuntu releases
+#VERSION=`git describe --tags --abbrev=0`
+VERSION="v0.0.1"
+VERSION=${VERSION//v}
+CURRENT_DIR=`pwd`
+
+for CHANNEL in "${CHANNELS[@]}"; do
+echo "${ppa_package_name} (${VERSION}~${CHANNEL}) ${CHANNEL}; urgency=medium
+
+  * New upstream release.
+
+ -- ${gpg_name} <${gpg_email}>  $(date +'%a, %d %b %Y %T %z')
+" > debian/changelog
+debuild -S -d
+cd ..
+dput ppa:${launchpad_name}/${ppa_name} *${CHANNEL}_source.changes
+cd "${CURRENT_DIR}"
+done
