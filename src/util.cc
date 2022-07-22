@@ -84,6 +84,25 @@ input_t Util::FixInput(input_t input) {
 								return CTRL_LEFT;
 							}
 						}
+						break;
+					}
+					case '6': {
+						// CTRL + shift + arrow key
+						switch (sequence[5]) {
+							case 'A': {
+								return CTRL_SUP;
+							}
+							case 'B': {
+								return CTRL_SDOWN;
+							}
+							case 'C': {
+								return CTRL_SRIGHT;
+							}
+							case 'D': {
+								return CTRL_SLEFT;
+							}
+						}
+						break;
 					}
 				}
 			}

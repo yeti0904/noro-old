@@ -28,6 +28,10 @@ typedef int16_t input_t;
 #define CTRL_RIGHT 561
 #define CTRL_DOWN  526
 #define CTRL_UP    567
+#define CTRL_SLEFT  547
+#define CTRL_SRIGHT 562
+#define CTRL_SDOWN  527
+#define CTRL_SUP    568
 
 #define KEY_SUP      337
 #define KEY_SDOWN    336

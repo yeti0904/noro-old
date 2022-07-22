@@ -134,10 +134,32 @@ void Editor::HandleInput(input_t input) {
 		}
 		case CTRL_LEFT: {
 			CursorWordLeft();
+			moved = true;
 			break;
 		}
 		case CTRL_RIGHT: {
 			CursorWordRight();
+			moved = true;
+			break;
+		}
+		case CTRL_SLEFT: {
+			if (!selected) {
+				selected = true;
+				selectionPosition = cursorPosition;
+			}
+
+			CursorWordLeft();
+			moved = true;
+			break;
+		}
+		case CTRL_SRIGHT: {
+			if (!selected) {
+				selected = true;
+				selectionPosition = cursorPosition;
+			}
+
+			CursorWordRight();
+			moved = true;
 			break;
 		}
 		case KEY_SHIFTTAB: {
