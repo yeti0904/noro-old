@@ -89,6 +89,9 @@ void App::Update() {
 
 	for (auto& oneInput : inputs) {
 		HandleInput(oneInput);
+		if (!run) {
+			return;
+		}
 	}
 
 	if (alert.active) {
