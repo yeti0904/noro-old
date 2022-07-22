@@ -29,8 +29,9 @@ typedef int16_t input_t;
 #define CTRL_DOWN  526
 #define CTRL_UP    567
 
-#define KEY_SUP  337
-#define KEY_SDOWN 336
+#define KEY_SUP      337
+#define KEY_SDOWN    336
+#define KEY_SHIFTTAB 353
 
 #define COLOR_GREY          8
 #define COLOR_BRIGHTRED     9

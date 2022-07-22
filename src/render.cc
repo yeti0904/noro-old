@@ -107,6 +107,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 
 		bool highlightLine = false;
 		if (config.highlightLine && (i == editor.cursorPosition.y)) {
+			attroff(A_REVERSE);
 			attron(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
 			mvhline(
 				(editorWindow.position.y + i) - editor.scroll.y, 
