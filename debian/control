@@ -2,7 +2,7 @@ Source: noro
 Section: editors
 Priority: optional
 Maintainer: adazem009 <adazem.009.games@gmail.com>
-Build-Depends: debhelper (>= 10), g++, libncurses-dev
+Build-Depends: debhelper (>= 10), cmake, g++, libncurses-dev
 Standards-Version: 4.4.1
 Homepage: https://github.com/MESYETI/noro
 Vcs-Git: https://github.com/MESYETI/noro.git
