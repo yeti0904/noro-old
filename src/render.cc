@@ -79,9 +79,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 		attroff(COLOR_PAIR(COLOUR_PAIR_COLUMNHIGHLIGHT));
 	}
 
-	Vec2& selectionStart = editor.SelectionStart();
-	Vec2& selectionEnd   = editor.SelectionEnd();
-	bool  inSelection    = false;
+	bool inSelection = false;
 	for (size_t i = editor.scroll.y;
 		(i - editor.scroll.y < (editorWindow.size.y - 2)) &&
 		(i < editor.fileBuffer.size());
@@ -110,22 +108,44 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 			attroff(A_REVERSE);
 			attron(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
 			mvhline(
-				(editorWindow.position.y + i) - editor.scroll.y, 
+				(editorWindow.position.y + i) - editor.scroll.y,
 				editorWindow.position.x,
 				' ', editorWindow.size.x
 			);
 			highlightLine = true;
 		}
-		
+
 		move((editorWindow.position.y + i) - editor.scroll.y, editorWindow.position.x);
 		for (size_t j = editor.scroll.x;
 			(j <= editor.fileBuffer[i].length() + lineExtendLength) &&
 			(j - editor.scroll.x < editorWindow.size.x);
 		++j) {
+			Vec2 selectionStart = editor.SelectionStart();
+			Vec2 selectionEnd   = editor.SelectionEnd();
+
+			selectionStart.x +=
+				std::count(
+					editor.fileBuffer[i].begin(),
+					editor.fileBuffer[i].begin() + selectionStart.x,
+					'\t'
+				) * (tabSize - 1);
+			selectionEnd.x +=
+				std::count(
+					editor.fileBuffer[i].begin(),
+					editor.fileBuffer[i].begin() + selectionEnd.x,
+					'\t'
+				) * (tabSize - 1);
+
 			if (highlightLine) {
+				if (inSelection) {
+					attron(A_REVERSE);
+				}
 				attron(COLOR_PAIR(COLOUR_PAIR_LINEHIGHLIGHT));
 			}
 			else {
+				if (inSelection) {
+					attron(A_REVERSE);
+				}
 				attron(COLOR_PAIR(COLOUR_PAIR_EDITOR));
 			}
 			if (
@@ -191,7 +211,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 				}
 			}
 
-			if ((i == editor.cursorPosition.y) && (j == cursorX) && !inSelection) {
+				if ((i == editor.cursorPosition.y) && (j == cursorX) && !inSelection) {
 				attroff(A_REVERSE);
 			}
 			else if (
