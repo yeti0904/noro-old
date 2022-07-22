@@ -1,7 +1,7 @@
 Source: noro
 Section: editors
 Priority: optional
-Maintainer: MESYETI mesyeti@mesyeti.uk
+Maintainer: adazem009 <adazem.009.games@gmail.com>
 Build-Depends: debhelper (>= 10), g++, libncurses-dev
 Standards-Version: 4.4.1
 Homepage: https://github.com/MESYETI/noro
