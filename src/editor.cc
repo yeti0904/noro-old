@@ -140,7 +140,32 @@ void Editor::HandleInput(input_t input) {
 			CursorWordRight();
 			break;
 		}
+		case KEY_SHIFTTAB: {
+			if (selected) {
+				Vec2 start = SelectionStart();
+				Vec2 end   = SelectionEnd();
+
+				for (size_t i = start.y; i < end.y; ++i) {
+					if (parent->config->spacesIndent) {
+						if (
+							fileBuffer[i].substr(0, parent->config->tabSize) ==
+							std::string(parent->config->tabSize, ' ')
+						) {
+							fileBuffer[i].erase(0, parent->config->tabSize);
+						}
+					}
+					else {
+						if (fileBuffer[i][0] == '\t') {
+							fileBuffer[i].erase(0, 1);
+						}
+					}
+				}
+				break;
+			}
+		}
+		// fall through
 		case '\t': {
+			/*
 			DeleteSelection();
 
 			if (parent->config->spacesIndent) {
@@ -149,11 +174,24 @@ void Editor::HandleInput(input_t input) {
 				);
 				cursorPosition.x += parent->config->tabSize;
 				break;
+			}*/
+			if (selected) {
+				Vec2 start = SelectionStart();
+				Vec2 end   = SelectionEnd();
+
+				for (size_t i = start.y; i < end.y; ++i) {
+					if (parent->config->spacesIndent) {
+						fileBuffer[i].insert(0, parent->config->tabSize, ' ');
+					}
+					else {
+						fileBuffer[i].insert(0, 1, '\t');
+					}
+				}
+				break;
 			}
 		}
 		// fall through
 		default: {
-
 			InsertText(std::string(1, input));
 			moved = true;
 			break;

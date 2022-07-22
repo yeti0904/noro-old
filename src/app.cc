@@ -228,7 +228,8 @@ void App::HandleInput(input_t input) {
 					"Toggle column highlight",
 					"Change highlighted column",
 					"Toggle auto indent",
-					"Set indent type"
+					"Set indent type",
+					"Toggle line highlighting"
 				};
 				break;
 			}

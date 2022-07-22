@@ -119,6 +119,17 @@ void InputEvents::Settings(InputWindow& textbox) {
 		textbox.completionCallback = InputEvents::ChangeIndentType;
 		textbox.complete           = false;
 	}
+	else if (textbox.userInput == "Toggle line highlighting") {
+		app->settings[INI::DefaultSection]["highlightLine"] =
+			app->config.highlightLine? "false" : "true";
+		app->SaveConfig();
+		IOHandle::Quit();
+		app->UpdateConfig();
+		app->alert.NewAlert(
+			std::string("Line highlight is now ") +
+			(app->config.highlightLine? "on" : "off"), ALERT_TIMER
+		);
+	}
 }
 
 void InputEvents::ChangeTheme(InputWindow& textbox) {

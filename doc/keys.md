@@ -1,24 +1,26 @@
 # keys
 ## editor
-| Key               | Action                     |
-| ----------------- | -------------------------- |
-| Ctrl + Q          | Quit                       |
-| Ctrl + E          | Maximise/unmaximise window |
-| Ctrl + S          | Save file                  |
-| Ctrl + D          | Save as                    |
-| Ctrl + O          | Open                       |
-| Ctrl + F          | Find                       |
-| Ctrl + N          | New tab                    |
-| Ctrl + W          | Close tab                  |
-| Page down         | next tab                   |
-| Page up           | previous tab               |
-| Ctrl + T          | Suspend to terminal        |
-| Ctrl + Y          | Open settings menu         |
-| Ctrl + R          | Reload noro                |
-| Ctrl + C          | Copy                       |
-| Ctrl + V          | Paste                      |
-| Ctrl + X          | Cut                        |
-| Ctrl + Left/right | Move cursor between words  |
+| Key               | Action                        |
+| ----------------- | ----------------------------- |
+| Ctrl + Q          | Quit                          |
+| Ctrl + E          | Maximise/unmaximise window    |
+| Ctrl + S          | Save file                     |
+| Ctrl + D          | Save as                       |
+| Ctrl + O          | Open                          |
+| Ctrl + F          | Find                          |
+| Ctrl + N          | New tab                       |
+| Ctrl + W          | Close tab                     |
+| Page down         | next tab                      |
+| Page up           | previous tab                  |
+| Ctrl + T          | Suspend to terminal           |
+| Ctrl + Y          | Open settings menu            |
+| Ctrl + R          | Reload noro                   |
+| Ctrl + C          | Copy                          |
+| Ctrl + V          | Paste                         |
+| Ctrl + X          | Cut                           |
+| Ctrl + Left/right | Move cursor between words     |
+| Tab               | Add indents to selection      |
+| Shift + Tab       | Remove indents from selection |
 
 ## textbox windows
 | Key        | Action                     |
