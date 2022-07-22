@@ -5,8 +5,7 @@
 sudo apt install -y devscripts dput debhelper
 
 CHANNELS=( bionic focal jammy ) # TODO: Use Launchpad API to get supported Ubuntu releases
-#VERSION=`git describe --tags --abbrev=0`
-VERSION="v0.0.1"
+VERSION=`git describe --tags --abbrev=0`
 VERSION=${VERSION//v}
 CURRENT_DIR=`pwd`
 
