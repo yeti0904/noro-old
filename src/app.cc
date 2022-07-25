@@ -110,10 +110,10 @@ void App::Update() {
 
 void App::Render() {
 	Renderers::Noro::Global(*this, config);
-	Renderers::Noro::RenderEditorWindow(editorWindow, config);
 	if (config.ruler) {
 		Renderers::Noro::RenderRuler(editorWindow);
 	}
+	Renderers::Noro::RenderEditorWindow(editorWindow, config);
 	if (alert.active) {
 		alert.Render();
 	}
@@ -342,7 +342,9 @@ void App::UpdateConfig() {
 			"activeTabBG = black\n"
 			"columnHighlightFG = black\n"
 			"columnHighlightBG = cyan\n"
-			"lineHighlight = blue"
+			"lineHighlight = blue\n"
+			"rulerFG = white\n"
+			"rulerBG = blue"
 		);
 		
 	}
@@ -361,7 +363,9 @@ void App::UpdateConfig() {
 			"activeTabBG = black\n"
 			"columnHighlightFG = black\n"
 			"columnHighlightBG = green\n"
-			"lineHighlight = green"
+			"lineHighlight = black\n"
+			"rulerFG = white\n"
+			"rulerBG = black"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/dark16.ini")) {
@@ -379,7 +383,9 @@ void App::UpdateConfig() {
 			"activeTabBG = black\n"
 			"columnHighlightFG = white\n"
 			"columnHighlightBG = grey\n"
-			"lineHighlight = grey"
+			"lineHighlight = grey\n"
+			"rulerFG = white\n"
+			"rulerBG = grey"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/mono.ini")) {
@@ -397,7 +403,9 @@ void App::UpdateConfig() {
 			"activeTabBG = black\n"
 			"columnHighlightFG = black\n"
 			"columnHighlightBG = white\n"
-			"lineHighlight = black"
+			"lineHighlight = black\n"
+			"rulerFG = black\n"
+			"rulerBG = white"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/gruvy.ini")) {
@@ -416,9 +424,20 @@ void App::UpdateConfig() {
 			"activeTabBG = default\n"
 			"columnHighlightFG = white\n"
 			"columnHighlightBG = grey\n"
-			"lineHighlight = grey"
+			"lineHighlight = grey\n"
+			"rulerFG = green\n"
+			"rulerBG = default"
 		);
 	}
+
+	// default settings
+	settings[INI::DefaultSection]["theme"]           = "noro";
+	settings[INI::DefaultSection]["tabSize"]         = "4";
+	settings[INI::DefaultSection]["highlightColumn"] = "false";
+	settings[INI::DefaultSection]["autoIndent"]      = "true";
+	settings[INI::DefaultSection]["spacesIndent"]    = "false";
+	settings[INI::DefaultSection]["highlightLine"]   = "true";
+	settings[INI::DefaultSection]["ruler"]           = "false";
 
 	// set up config
 	try {
@@ -431,7 +450,7 @@ void App::UpdateConfig() {
 			error.What().c_str()
 		);
 	}
-	std::vector <std::string> requiredProperties = {
+	/*std::vector <std::string> requiredProperties = {
 		"theme",
 		"tabSize",
 		"highlightColumn",
@@ -439,7 +458,7 @@ void App::UpdateConfig() {
 		"spacesIndent",
 		"highlightLine",
 		"ruler"
-	};
+	};*/
 
 	/*std::vector <std::string> props;
 	settings.listProps(props);
@@ -447,12 +466,12 @@ void App::UpdateConfig() {
 		puts(props[i].c_str());
 	}*/
 	
-	for (size_t i = 0; i < requiredProperties.size(); ++i) {
+	/*for (size_t i = 0; i < requiredProperties.size(); ++i) {
 		if (!settings.Contains(INI::DefaultSection, requiredProperties[i])) {
 			fprintf(stderr, "[ERROR] missing property in config file: %s\n", requiredProperties[i].c_str());
 			exit(1);
 		}
-	}
+	}*/
 	if (!Util::IsBool(settings[INI::DefaultSection]["highlightColumn"])) {
 		fprintf(stderr, "[ERROR] property highlightColumn is not a valid boolean\n");
 		exit(1);

@@ -16,6 +16,7 @@ class Theme {
 		ColourPair activeTab;
 		ColourPair columnHighlight;
 		Colour     lineHighlight;
+		ColourPair ruler;
 
 		// functions
 		Theme();

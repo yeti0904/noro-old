@@ -8,6 +8,7 @@ Theme::Theme() {
 	tabs            = {COLOR_BLACK, COLOR_BLACK};
 	activeTab       = {COLOR_BLACK, COLOR_BLACK};
 	columnHighlight = {COLOR_BLACK, COLOR_BLACK};
+	ruler           = {COLOR_BLACK, COLOR_BLACK};
 }
 
 Theme::~Theme() {
@@ -24,13 +25,15 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 		"tabFG",             "tabBG",
 		"activeTabFG",       "activeTabBG",
 		"columnHighlightFG", "columnHighlightBG",
-		"lineHighlight"
+		"lineHighlight",
+		"rulerFG",           "rulerBG"
 	};
 
 	for (size_t i = 0; i < requiredProperties.size(); ++i) {
 		if (!properties.Contains(INI::DefaultSection, requiredProperties[i])) {
 			IOHandle::Quit();
-			printf("[ERROR] '%s' property missing from theme configuration\n",
+			fprintf(
+				stderr, "[ERROR] '%s' property missing from theme configuration\n",
 				requiredProperties[i].c_str()
 			);
 			exit(1);
@@ -53,6 +56,9 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 	activeTab.bg       = StringToColour(properties[INI::DefaultSection]["activeTabBG"]);
 
 	lineHighlight      = StringToColour(properties[INI::DefaultSection]["lineHighlight"]);
+
+	ruler.fg           = StringToColour(properties[INI::DefaultSection]["rulerFG"]);
+	ruler.bg           = StringToColour(properties[INI::DefaultSection]["rulerBG"]);
 
 	columnHighlight.fg = StringToColour(
 		properties[INI::DefaultSection]["columnHighlightFG"]

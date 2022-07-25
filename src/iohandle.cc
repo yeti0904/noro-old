@@ -31,6 +31,7 @@ void IOHandle::InitColours(Theme& theme) {
 		COLOUR_PAIR_COLUMNHIGHLIGHT, theme.columnHighlight.fg, theme.columnHighlight.bg
 	);
 	init_pair(COLOUR_PAIR_LINEHIGHLIGHT, theme.editor.fg, theme.lineHighlight);
+	init_pair(COLOUR_PAIR_RULER,         theme.ruler.fg,  theme.ruler.bg);
 }
 
 void IOHandle::Quit() {

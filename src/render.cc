@@ -238,7 +238,7 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 
 	// render tab bar
 	attron(COLOR_PAIR(COLOUR_PAIR_TABS));
-	mvhline(
+	/*mvhline(
 		editorWindow.position.y + editorWindow.size.y - 2,
 		editorWindow.position.x,
 		' ', editorWindow.size.x
@@ -246,7 +246,9 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 	move(
 		editorWindow.position.y + editorWindow.size.y - 2,
 		editorWindow.position.x
-	);
+	);*/
+	mvhline(LINES - 2, 0, ' ', COLS);
+	move(LINES - 2, 0);
 	size_t x = 0;
 	for (size_t i = 0; i < editorWindow.editors.size(); ++i) {
 		// check if this tab is the tab that is in use
@@ -280,6 +282,14 @@ size_t Renderers::Noro::RulerSize(EditorWindow& window) {
 
 void Renderers::Noro::RenderRuler(EditorWindow& editorWindow) {
 	Editor editor = editorWindow.GetCurrentEditor();
+
+	attron(COLOR_PAIR(COLOUR_PAIR_RULER));
+
+	// clear ruler area
+	for (size_t i = 0; i < Renderers::Noro::RulerSize(editorWindow); ++i) {
+		mvvline(1, i, ' ', LINES - 2);
+	}
+	
 	mvvline(1, Renderers::Noro::RulerSize(editorWindow) - 1, ACS_VLINE, LINES - 2);
 	for (size_t i = editor.scroll.y; i - editor.scroll.y < (size_t) LINES - 2; ++i) {
 		if (i >= editor.fileBuffer.size()) {
@@ -293,4 +303,5 @@ void Renderers::Noro::RenderRuler(EditorWindow& editorWindow) {
 			attroff(A_BOLD);
 		}
 	}
+	attroff(COLOR_PAIR(COLOUR_PAIR_RULER));
 }
