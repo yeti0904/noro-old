@@ -588,7 +588,7 @@ void App::UpdateConfig() {
 
 		for (auto& theme : builtInThemes) {
 			remove(std::string(
-				home + "/.config/noro/themes" + theme + ".ini"
+				home + "/.config/noro/themes/" + theme + ".ini"
 			).c_str());
 		}
 
