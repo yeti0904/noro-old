@@ -17,7 +17,7 @@ Theme::~Theme() {
 	
 }
 
-void Theme::ConstructTheme(INI::Structure <char>& properties) {
+bool Theme::ConstructTheme(INI::Structure <char>& properties) {
 	Theme();
 
 	std::vector <std::string> requiredProperties = {
@@ -40,7 +40,7 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 				stderr, "[ERROR] '%s' property missing from theme configuration\n",
 				requiredProperties[i].c_str()
 			);
-			exit(1);
+			return false;
 		}
 	}
 
@@ -76,6 +76,8 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 	columnHighlight.bg = StringToColour(
 		properties[INI::DefaultSection]["columnHighlightBG"]
 	);
+
+	return true;
 }
 
 int Theme::StringToColour(std::string colour) {

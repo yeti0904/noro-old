@@ -25,6 +25,6 @@ class Theme {
 		~Theme();
 
 		// util functions
-		void ConstructTheme(INI::Structure <char>& properties);
+		bool ConstructTheme(INI::Structure <char>& properties);
 		int  StringToColour(std::string colour);
 };
