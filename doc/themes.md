@@ -11,3 +11,6 @@ for more info on colours you can use, see <a href="/doc/colours.md">colours.md</
 - `activeTabBG`, `activeTabFG` - active tab colour
 - `columnHighlightBG`, `columnHighlightFG` - highlighted column colour
 - `lineHighlight` - the background colour that the current line should be highlighted with
+- `rulerNumberFG`, `rulerNumberBG` - line numbers that arent on the current cursor line
+- `rulerCurrentFG`, `rulerCurrentBG` - line numbers that are on the current cursor line
+- `rulerLineFG`, `rulerLineBG` - the colour of the vertical line that seperates the ruler and the file buffer

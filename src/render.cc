@@ -280,28 +280,47 @@ size_t Renderers::Noro::RulerSize(EditorWindow& window) {
 	return Util::GetDigits(window.GetCurrentEditor().fileBuffer.size()) + 2;
 }
 
-void Renderers::Noro::RenderRuler(EditorWindow& editorWindow) {
-	Editor editor = editorWindow.GetCurrentEditor();
+void Renderers::Noro::RenderRuler(EditorWindow& editorWindow, AppConfig& config) {
+	Editor editor    = editorWindow.GetCurrentEditor();
+	size_t rulerSize = Renderers::Noro::RulerSize(editorWindow);
 
-	attron(COLOR_PAIR(COLOUR_PAIR_RULER));
+	attron(COLOR_PAIR(COLOUR_PAIR_RULERNUMBERS));
 
 	// clear ruler area
 	for (size_t i = 0; i < Renderers::Noro::RulerSize(editorWindow); ++i) {
 		mvvline(1, i, ' ', LINES - 2);
 	}
-	
-	mvvline(1, Renderers::Noro::RulerSize(editorWindow) - 1, ACS_VLINE, LINES - 2);
+
+	attroff(COLOR_PAIR(COLOUR_PAIR_RULERNUMBERS));
+	attron(COLOR_PAIR(COLOUR_PAIR_RULERLINE));
+	mvvline(1, rulerSize - 1, ACS_VLINE, LINES - 2);
+	attroff(COLOR_PAIR(COLOUR_PAIR_RULERLINE));
+	attron(COLOR_PAIR(COLOUR_PAIR_RULERNUMBERS));
+
 	for (size_t i = editor.scroll.y; i - editor.scroll.y < (size_t) LINES - 2; ++i) {
+		std::string lineNumber = std::to_string(i + 1);
 		if (i >= editor.fileBuffer.size()) {
 			break;
 		}
 		if (i == editor.cursorPosition.y) {
 			attron(A_BOLD);
+			attroff(COLOR_PAIR(COLOUR_PAIR_RULERNUMBERS));
+			attron(COLOR_PAIR(COLOUR_PAIR_RULERCURRENT));
 		}
-		mvprintw((i - editor.scroll.y) + 1, 0, "%i", (int) i + 1);
+		if (config.rulerAlignRight) {
+			mvaddstr(
+				(i - editor.scroll.y) + 1, rulerSize - 1 - lineNumber.size(),
+				lineNumber.c_str()
+			);
+		}
+		else {
+			mvaddstr((i - editor.scroll.y) + 1, 0, lineNumber.c_str());
+		}
 		if (i == editor.cursorPosition.y) {
 			attroff(A_BOLD);
+			attroff(COLOR_PAIR(COLOUR_PAIR_RULERCURRENT));
+			attron(COLOR_PAIR(COLOUR_PAIR_RULERNUMBERS));
 		}
 	}
-	attroff(COLOR_PAIR(COLOUR_PAIR_RULER));
+	attroff(COLOR_PAIR(COLOUR_PAIR_RULERNUMBERS));
 }

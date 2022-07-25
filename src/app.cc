@@ -111,7 +111,7 @@ void App::Update() {
 void App::Render() {
 	Renderers::Noro::Global(*this, config);
 	if (config.ruler) {
-		Renderers::Noro::RenderRuler(editorWindow);
+		Renderers::Noro::RenderRuler(editorWindow, config);
 	}
 	Renderers::Noro::RenderEditorWindow(editorWindow, config);
 	if (alert.active) {
@@ -324,7 +324,8 @@ void App::UpdateConfig() {
 			"autoIndent = true\n"
 			"spacesIndent = false\n"
 			"highlightLine = true\n"
-			"ruler = false"
+			"ruler = false\n"
+			"rulerAlignRight = false"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/noro.ini")) {
@@ -343,8 +344,12 @@ void App::UpdateConfig() {
 			"columnHighlightFG = black\n"
 			"columnHighlightBG = cyan\n"
 			"lineHighlight = blue\n"
-			"rulerFG = white\n"
-			"rulerBG = blue"
+			"rulerNumberFG = white\n"
+			"rulerNumberBG = blue\n"
+			"rulerCurrentFG = white\n"
+			"rulerCurrentBG = blue\n"
+			"rulerLineFG = white\n"
+			"rulerLineBG = blue"
 		);
 		
 	}
@@ -364,8 +369,12 @@ void App::UpdateConfig() {
 			"columnHighlightFG = black\n"
 			"columnHighlightBG = green\n"
 			"lineHighlight = black\n"
-			"rulerFG = white\n"
-			"rulerBG = black"
+			"rulerNumberFG = white\n"
+			"rulerNumberBG = black\n"
+			"rulerCurrentFG = green\n"
+			"rulerCurrentBG = black\n"
+			"rulerLineFG = green\n"
+			"rulerLineBG = black"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/dark16.ini")) {
@@ -384,8 +393,12 @@ void App::UpdateConfig() {
 			"columnHighlightFG = white\n"
 			"columnHighlightBG = grey\n"
 			"lineHighlight = grey\n"
-			"rulerFG = white\n"
-			"rulerBG = grey"
+			"rulerNumberFG = white\n"
+			"rulerNumberBG = grey\n"
+			"rulerCurrentFG = brightwhite\n"
+			"rulerCurrentBG = grey\n"
+			"rulerLineFG = green\n"
+			"rulerLineBG = grey"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/mono.ini")) {
@@ -404,8 +417,12 @@ void App::UpdateConfig() {
 			"columnHighlightFG = black\n"
 			"columnHighlightBG = white\n"
 			"lineHighlight = black\n"
-			"rulerFG = black\n"
-			"rulerBG = white"
+			"rulerNumberFG = black\n"
+			"rulerNumberBG = white\n"
+			"rulerCurrentFG = black\n"
+			"rulerCurrentBG = white\n"
+			"rulerLineFG = black\n"
+			"rulerLineBG = white"
 		);
 	}
 	if (!FS::File::Exists(home + "/.config/noro/themes/gruvy.ini")) {
@@ -425,8 +442,12 @@ void App::UpdateConfig() {
 			"columnHighlightFG = white\n"
 			"columnHighlightBG = grey\n"
 			"lineHighlight = grey\n"
-			"rulerFG = green\n"
-			"rulerBG = default"
+			"rulerNumberFG = grey\n"
+			"rulerNumberBG = default\n"
+			"rulerCurrentFG = white\n"
+			"rulerCurrentBG = default\n"
+			"rulerLineFG = grey\n"
+			"rulerLineBG = default"
 		);
 	}
 
@@ -438,6 +459,9 @@ void App::UpdateConfig() {
 	settings[INI::DefaultSection]["spacesIndent"]    = "false";
 	settings[INI::DefaultSection]["highlightLine"]   = "true";
 	settings[INI::DefaultSection]["ruler"]           = "false";
+	settings[INI::DefaultSection]["rulerAlignRight"] = "false";
+
+	auto defaultSettings = settings[INI::DefaultSection];
 
 	// set up config
 	try {
@@ -449,7 +473,16 @@ void App::UpdateConfig() {
 			(int)error.Line(),
 			error.What().c_str()
 		);
+		exit(1);
 	}
+
+	// apply default settings
+	for (const auto& [key, value] : defaultSettings) {
+		if (!settings.Contains(INI::DefaultSection, key)) {
+			settings[INI::DefaultSection][key] = value;
+		}
+	}
+	
 	/*std::vector <std::string> requiredProperties = {
 		"theme",
 		"tabSize",
@@ -457,7 +490,8 @@ void App::UpdateConfig() {
 		"autoIndent",
 		"spacesIndent",
 		"highlightLine",
-		"ruler"
+		"ruler",
+		"rulerAlignRight"
 	};*/
 
 	/*std::vector <std::string> props;
@@ -516,6 +550,11 @@ void App::UpdateConfig() {
 		exit(1);
 	}
 	config.ruler = settings.AsBoolean(INI::DefaultSection, "ruler");
+	if (!Util::IsBool(settings[INI::DefaultSection]["rulerAlignRight"])) {
+		fputs("[ERROR] property rulerAlignRight is not a valid boolean", stderr);
+		exit(1);
+	}
+	config.rulerAlignRight = settings.AsBoolean(INI::DefaultSection, "rulerAlignRight");
 
 	INI::Structure <char> themeConfig;
 	try {
@@ -554,7 +593,8 @@ void App::SaveConfig() {
 		"\nautoIndent = " + settings[INI::DefaultSection]["autoIndent"] +
 		"\nspacesIndent = " + settings[INI::DefaultSection]["spacesIndent"] +
 		"\nhighlightLine = " + settings[INI::DefaultSection]["highlightLine"] +
-		"\nruler = " + settings[INI::DefaultSection]["ruler"];
+		"\nruler = " + settings[INI::DefaultSection]["ruler"] +
+		"\nrulerAlignRight = " + settings[INI::DefaultSection]["rulerAlignRight"];
 		
 	if (settings[INI::DefaultSection]["highlightColumn"] == "true") {
 		properties +=

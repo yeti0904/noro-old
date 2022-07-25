@@ -9,4 +9,5 @@ struct AppConfig {
 	bool    spacesIndent;
 	bool    highlightLine;
 	bool    ruler;
+	bool    rulerAlignRight;
 };

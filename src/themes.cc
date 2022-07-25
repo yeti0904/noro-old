@@ -8,7 +8,9 @@ Theme::Theme() {
 	tabs            = {COLOR_BLACK, COLOR_BLACK};
 	activeTab       = {COLOR_BLACK, COLOR_BLACK};
 	columnHighlight = {COLOR_BLACK, COLOR_BLACK};
-	ruler           = {COLOR_BLACK, COLOR_BLACK};
+	rulerNumber     = {COLOR_BLACK, COLOR_BLACK};
+	rulerCurrent    = {COLOR_BLACK, COLOR_BLACK};
+	rulerLine       = {COLOR_BLACK, COLOR_BLACK};
 }
 
 Theme::~Theme() {
@@ -26,7 +28,9 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 		"activeTabFG",       "activeTabBG",
 		"columnHighlightFG", "columnHighlightBG",
 		"lineHighlight",
-		"rulerFG",           "rulerBG"
+		"rulerNumberFG",     "rulerNumberBG",
+		"rulerCurrentFG",    "rulerCurrentBG",
+		"rulerLineFG",       "rulerLineBG"
 	};
 
 	for (size_t i = 0; i < requiredProperties.size(); ++i) {
@@ -40,25 +44,31 @@ void Theme::ConstructTheme(INI::Structure <char>& properties) {
 		}
 	}
 
-	editor.fg          = StringToColour(properties[INI::DefaultSection]["editorFG"]);
-	editor.bg          = StringToColour(properties[INI::DefaultSection]["editorBG"]);
+	editor.fg      = StringToColour(properties[INI::DefaultSection]["editorFG"]);
+	editor.bg      = StringToColour(properties[INI::DefaultSection]["editorBG"]);
 	
-	titlebar.fg        = StringToColour(properties[INI::DefaultSection]["titlebarFG"]);
-	titlebar.bg        = StringToColour(properties[INI::DefaultSection]["titlebarBG"]);
+	titlebar.fg    = StringToColour(properties[INI::DefaultSection]["titlebarFG"]);
+	titlebar.bg    = StringToColour(properties[INI::DefaultSection]["titlebarBG"]);
 	
-	alert.fg           = StringToColour(properties[INI::DefaultSection]["alertFG"]);
-	alert.bg           = StringToColour(properties[INI::DefaultSection]["alertBG"]);
+	alert.fg       = StringToColour(properties[INI::DefaultSection]["alertFG"]);
+	alert.bg       = StringToColour(properties[INI::DefaultSection]["alertBG"]);
 
-	tabs.fg            = StringToColour(properties[INI::DefaultSection]["tabFG"]);
-	tabs.bg            = StringToColour(properties[INI::DefaultSection]["tabBG"]);
+	tabs.fg        = StringToColour(properties[INI::DefaultSection]["tabFG"]);
+	tabs.bg        = StringToColour(properties[INI::DefaultSection]["tabBG"]);
 
-	activeTab.fg       = StringToColour(properties[INI::DefaultSection]["activeTabFG"]);
-	activeTab.bg       = StringToColour(properties[INI::DefaultSection]["activeTabBG"]);
+	activeTab.fg   = StringToColour(properties[INI::DefaultSection]["activeTabFG"]);
+	activeTab.bg   = StringToColour(properties[INI::DefaultSection]["activeTabBG"]);
 
-	lineHighlight      = StringToColour(properties[INI::DefaultSection]["lineHighlight"]);
+	lineHighlight  = StringToColour(properties[INI::DefaultSection]["lineHighlight"]);
 
-	ruler.fg           = StringToColour(properties[INI::DefaultSection]["rulerFG"]);
-	ruler.bg           = StringToColour(properties[INI::DefaultSection]["rulerBG"]);
+	rulerNumber.fg = StringToColour(properties[INI::DefaultSection]["rulerNumberFG"]);
+	rulerNumber.bg = StringToColour(properties[INI::DefaultSection]["rulerNumberBG"]);
+
+	rulerCurrent.fg = StringToColour(properties[INI::DefaultSection]["rulerCurrentFG"]);
+	rulerCurrent.bg = StringToColour(properties[INI::DefaultSection]["rulerCurrentBG"]);
+
+	rulerLine.fg = StringToColour(properties[INI::DefaultSection]["rulerLineFG"]);
+	rulerLine.bg = StringToColour(properties[INI::DefaultSection]["rulerLineBG"]);
 
 	columnHighlight.fg = StringToColour(
 		properties[INI::DefaultSection]["columnHighlightFG"]

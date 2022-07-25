@@ -10,6 +10,6 @@ namespace Renderers {
 		void   Global(App& app, AppConfig& config);
 		void   RenderEditorWindow(EditorWindow& editorWindow, AppConfig& config);
 		size_t RulerSize(EditorWindow& window);
-		void   RenderRuler(EditorWindow& editorWindow);
+		void   RenderRuler(EditorWindow& editorWindow, AppConfig& config);
 	}
 }

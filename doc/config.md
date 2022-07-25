@@ -9,3 +9,4 @@
 - `spacesIndent` (boolean) - when enabled, adds space characters when you press the tab key. when disabled, adds tab characters when you press the tab key. default: `false`
 - `highlightLine` (boolean) - when enabled, highlights the current line the cursor is on
 - `ruler` (boolean) - when enabled, the editor window will be moved to make space for line numebrs
+- `rulerAlignRight` (boolean) - when enabled, line numbers will be aligned to the right instead of the left
