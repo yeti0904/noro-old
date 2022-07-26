@@ -12,6 +12,7 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <filesystem>
 
 // C libraries
 #include <ncurses.h>

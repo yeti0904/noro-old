@@ -19,5 +19,6 @@ namespace FS {
 	namespace Directory {
 		bool Exists(std::string dname);
 		void Create(std::string dname);
+		void Delete(std::string dname);
 	}
 }

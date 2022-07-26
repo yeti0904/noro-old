@@ -141,6 +141,17 @@ void InputEvents::Settings(InputWindow& textbox) {
 			(app->config.ruler? "on" : "off"), ALERT_TIMER
 		);
 	}
+	else if (textbox.userInput == "Change ruler alignment") {
+		app->settings[INI::DefaultSection]["rulerAlignRight"] =
+			app->config.rulerAlignRight? "false" : "true";
+		app->SaveConfig();
+		IOHandle::Quit();
+		app->UpdateConfig();
+		app->alert.NewAlert(
+			std::string("Ruler is now aligned to the ") +
+			(app->config.rulerAlignRight? "right" : "left"), ALERT_TIMER
+		);
+	}
 }
 
 void InputEvents::ChangeTheme(InputWindow& textbox) {

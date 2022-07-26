@@ -32,6 +32,7 @@ class App {
 		void Update();
 		void Render();
 		void HandleInput(input_t input);
+		void UpdateThemes();
 		~App();
 
 		// util functions

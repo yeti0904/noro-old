@@ -35,6 +35,49 @@ App::App(int argc, char** argv) {
 					run = false;
 					return;
 				}
+				else if ((args[i] == "--reset") || (args[i] == "-r")) {
+					char confirmation;
+					printf("Confirm you want to reset noro config? (Y/N) ");
+					confirmation = getchar();
+					switch (confirmation) {
+						case 'Y':
+						case 'y': {
+							std::string home;
+							{
+								char* homeraw = getenv("HOME");
+								if (homeraw == nullptr) {
+									fprintf(stderr, "[ERROR] getenv returned NULL\n");
+									exit(1);
+								}
+								home = homeraw;
+							}
+
+							FS::Directory::Delete(home + "/.config/noro");
+							exit(0);
+							break;
+						}
+						case 'N':
+						case 'n': {
+							puts("Cancelled");
+							exit(0);
+							break;
+						}
+						default: {
+							puts("Abort");
+							exit(0);
+							break;
+						}
+					}
+				}
+				else if ((args[i] == "--help") || (args[i] == "-h")) {
+					puts(
+						"options:\n"
+						"    -h / --help : show this menu\n"
+						"    -v / --version : show app version\n"
+						"    -r / --reset   : reset noro config"
+					);
+					exit(0);
+				}
 			}
 			else {
 				if (!FS::File::Exists(args[i])) {
@@ -242,7 +285,8 @@ void App::HandleInput(input_t input) {
 					"Toggle auto indent",
 					"Set indent type",
 					"Toggle line highlighting",
-					"Toggle line numbers"
+					"Toggle line numbers",
+					"Change ruler alignment"
 				};
 				break;
 			}
@@ -577,23 +621,7 @@ void App::UpdateConfig() {
 	}
 
 	if (!theme.ConstructTheme(themeConfig)) {
-		// update noro
-		std::vector <std::string> builtInThemes = {
-			"dark16",
-			"dark",
-			"gruvy",
-			"mono",
-			"noro"
-		};
-
-		for (auto& theme : builtInThemes) {
-			remove(std::string(
-				home + "/.config/noro/themes/" + theme + ".ini"
-			).c_str());
-		}
-
-		alert.NewAlert("Themes updated", ALERT_TIMER);
-		UpdateConfig();
+		UpdateThemes();
 		return;
 	}
 
@@ -627,4 +655,35 @@ void App::SaveConfig() {
 	}
 	
 	FS::File::Write(home + "/.config/noro/settings.ini", properties);
+}
+
+void App::UpdateThemes() {
+	// update noro
+
+	std::string home;
+	{
+		char* homeraw = getenv("HOME");
+		if (homeraw == nullptr) {
+			fprintf(stderr, "[ERROR] getenv(\"HOME\") returned NULL\n");
+			exit(1);
+		}
+		home = homeraw;
+	}
+	
+	std::vector <std::string> builtInThemes = {
+		"dark16",
+		"dark",
+		"gruvy",
+		"mono",
+		"noro"
+	};
+
+	for (auto& theme : builtInThemes) {
+		remove(std::string(
+			home + "/.config/noro/themes/" + theme + ".ini"
+		).c_str());
+	}
+
+	alert.NewAlert("Themes updated", ALERT_TIMER);
+	UpdateConfig();
 }

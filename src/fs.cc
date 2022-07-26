@@ -109,3 +109,16 @@ bool FS::Directory::Exists(std::string dname) {
 void FS::Directory::Create(std::string dname) {
 	mkdir(dname.c_str(), 0777);
 }
+
+void FS::Directory::Delete(std::string dname) {
+	if (!FS::Directory::Exists(dname)) {
+		fprintf(stderr, "[ERROR] Directory doesn't exist\n");
+		return;
+	}
+
+	std::error_code error;
+	if (!std::filesystem::remove_all(dname, error)) {
+		fprintf(stderr, "[ERROR] %s\n", error.message().c_str());
+		exit(1);
+	}
+}
