@@ -1,3 +1,6 @@
 [submodule "inicxx"]
 	path = inicxx
 	url = https://github.com/lordoftrident/inicxx
+[submodule "cmrc"]
+	path = cmrc
+	url = https://github.com/vector-of-bool/cmrc

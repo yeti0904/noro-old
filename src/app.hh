@@ -20,6 +20,7 @@ class App {
 		AppConfig                 config;
 		INI::Structure <char>     settings;
 		Theme                     theme;
+		cmrc::embedded_filesystem embeddedFS;
 
 		// recording variables
 		bool                   isRecording;

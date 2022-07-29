@@ -20,6 +20,9 @@
 // C++ libraries
 #include "../inicxx/inicxx.hh"
 
+// CMake stuff
+#include <cmrc/cmrc.hpp>
+
 // types
 typedef int16_t input_t;
 

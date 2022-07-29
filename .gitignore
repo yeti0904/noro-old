@@ -12,3 +12,8 @@ noro_0.1.0_source.build
 noro_0.1.0_source.buildubfi
 noro_0.1.0_source.changes
 PACKAGE_unknown_source.build
+--force
+_cmrc
+__cmrc_noro-resources
+CMakeRC.cmake
+libnoro-resources.a
