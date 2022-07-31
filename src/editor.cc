@@ -522,14 +522,22 @@ Editor::~Editor() {
 }
 
 void Editor::OpenFile(std::string fname) {
-	char* home = getenv("HOME");
-	if (home == NULL) {
-		IOHandle::Quit();
-		fprintf(stderr, "getenv(\"HOME\") failed");
-		exit(1);
+	std::string home;
+	{
+		char* homeraw = getenv("HOME");
+		if (homeraw == nullptr) {
+			IOHandle::Quit();
+			fprintf(stderr, "getenv(\"HOME\") failed");
+			exit(1);
+		}
+		home = homeraw;
 	}
-	// fileName   = Util::StringReplaceAll(fname, "~", home);
-	fileName       = fname;
+	if (fname[0] == '~') {
+		fileName = home + fname.substr(1);
+	}
+	else {
+		fileName       = fname;
+	}
 	fileBuffer     = FS::File::ReadIntoVector(fileName);
 	title          = "Editor (" + fileName + ")";
 	cursorPosition = {0, 0};

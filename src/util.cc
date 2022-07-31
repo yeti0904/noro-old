@@ -162,3 +162,11 @@ std::vector <std::string> Util::GetRecordings() {
 size_t Util::GetDigits(size_t number) {
 	return std::to_string(number).length();
 }
+
+std::string Util::BaseName(std::string path) {
+	size_t pos = path.rfind('/');
+	if (pos == std::string::npos) {
+		return path;
+	}
+	return path.substr(pos + 1);
+}

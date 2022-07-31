@@ -256,10 +256,9 @@ void Renderers::Noro::RenderEditorWindow(EditorWindow& editorWindow, AppConfig& 
 			attroff(COLOR_PAIR(COLOUR_PAIR_TABS));
 			attron(COLOR_PAIR(COLOUR_PAIR_ACTIVETAB));
 		}
-		for (size_t j = 0;
-			j < editorWindow.editors[i].fileName.length();
-		++j) {
-			addch(editorWindow.editors[i].fileName[j]);
+		std::string fname = Util::BaseName(editorWindow.editors[i].fileName);
+		for (size_t j = 0; j < fname.length(); ++j) {
+			addch(fname[j]);
 			++ x;
 			if (x > editorWindow.size.x) {
 				goto endTabBarRendering;
