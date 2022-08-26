@@ -15,4 +15,5 @@ namespace Util {
 	std::vector <std::string> GetRecordings();
 	size_t                    GetDigits(size_t number);
 	std::string               BaseName(std::string path);
+	std::string               CurrentTime();
 }

@@ -34,6 +34,7 @@ void IOHandle::InitColours(Theme& theme) {
 	init_pair(COLOUR_PAIR_RULERNUMBERS,  theme.rulerNumber.fg,  theme.rulerNumber.bg);
 	init_pair(COLOUR_PAIR_RULERCURRENT,  theme.rulerCurrent.fg, theme.rulerCurrent.bg);
 	init_pair(COLOUR_PAIR_RULERLINE,     theme.rulerLine.fg,    theme.rulerLine.bg);
+	init_pair(COLOUR_PAIR_CLOCK,         theme.clock.fg,        theme.clock.bg);
 }
 
 void IOHandle::Quit() {

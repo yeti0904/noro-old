@@ -11,6 +11,7 @@ Theme::Theme() {
 	rulerNumber     = {COLOR_BLACK, COLOR_BLACK};
 	rulerCurrent    = {COLOR_BLACK, COLOR_BLACK};
 	rulerLine       = {COLOR_BLACK, COLOR_BLACK};
+	clock           = {COLOR_BLACK, COLOR_BLACK};
 }
 
 Theme::~Theme() {
@@ -30,7 +31,8 @@ bool Theme::ConstructTheme(INI::Structure <char>& properties) {
 		"lineHighlight",
 		"rulerNumberFG",     "rulerNumberBG",
 		"rulerCurrentFG",    "rulerCurrentBG",
-		"rulerLineFG",       "rulerLineBG"
+		"rulerLineFG",       "rulerLineBG",
+		"clockFG",           "clockBG"
 	};
 
 	for (size_t i = 0; i < requiredProperties.size(); ++i) {
@@ -76,6 +78,9 @@ bool Theme::ConstructTheme(INI::Structure <char>& properties) {
 	columnHighlight.bg = StringToColour(
 		properties[INI::DefaultSection]["columnHighlightBG"]
 	);
+
+	clock.fg = StringToColour(properties[INI::DefaultSection]["clockFG"]);
+	clock.bg = StringToColour(properties[INI::DefaultSection]["clockBG"]);
 
 	return true;
 }

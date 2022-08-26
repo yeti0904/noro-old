@@ -7,7 +7,7 @@
 
 uint8_t tabSize;
 
-void Renderers::Noro::Global(App& app, AppConfig&) {
+void Renderers::Noro::Global(App& app, AppConfig& config) {
 	// set global variables for use in window renderers
 	tabSize = app.config.tabSize;
 
@@ -22,6 +22,18 @@ void Renderers::Noro::Global(App& app, AppConfig&) {
 	mvhline(0, 0, ' ', COLS);
 	move(0, 0);
 	addstr(APP_NAME " " APP_VERSION);
+
+	if (config.showClock) {
+		std::string timeString = Util::CurrentTime();
+
+		attroff(COLOR_PAIR(COLOUR_PAIR_TITLEBAR));
+		attron(COLOR_PAIR(COLOUR_PAIR_CLOCK));
+
+		mvaddstr(0, COLS - timeString.length(), timeString.c_str());
+
+		attroff(COLOR_PAIR(COLOUR_PAIR_CLOCK));
+		attron(COLOR_PAIR(COLOUR_PAIR_TITLEBAR));
+	}
 
 	mvhline(LINES - 1, 0, ' ', COLS);
 	move(LINES - 1, 0);

@@ -409,6 +409,7 @@ void App::UpdateConfig() {
 	settings[INI::DefaultSection]["highlightLine"]   = "true";
 	settings[INI::DefaultSection]["ruler"]           = "false";
 	settings[INI::DefaultSection]["rulerAlignRight"] = "false";
+	settings[INI::DefaultSection]["showClock"]       = "true";
 
 	auto defaultSettings = settings[INI::DefaultSection];
 
@@ -504,6 +505,11 @@ void App::UpdateConfig() {
 		exit(1);
 	}
 	config.rulerAlignRight = settings.AsBoolean(INI::DefaultSection, "rulerAlignRight");
+	if (!Util::IsBool(settings[INI::DefaultSection]["showClock"])) {
+		fputs("[ERROR] property showClock is not a valid boolean", stderr);
+		exit(1);
+	}
+	config.showClock = settings.AsBoolean(INI::DefaultSection, "showClock");
 
 	INI::Structure <char> themeConfig;
 	try {
@@ -547,7 +553,8 @@ void App::SaveConfig() {
 		"\nspacesIndent = " + settings[INI::DefaultSection]["spacesIndent"] +
 		"\nhighlightLine = " + settings[INI::DefaultSection]["highlightLine"] +
 		"\nruler = " + settings[INI::DefaultSection]["ruler"] +
-		"\nrulerAlignRight = " + settings[INI::DefaultSection]["rulerAlignRight"];
+		"\nrulerAlignRight = " + settings[INI::DefaultSection]["rulerAlignRight"] +
+		"\nshowClock = " + settings[INI::DefaultSection]["showClock"];
 		
 	if (settings[INI::DefaultSection]["highlightColumn"] == "true") {
 		properties +=

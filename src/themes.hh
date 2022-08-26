@@ -19,6 +19,7 @@ class Theme {
 		ColourPair rulerNumber;
 		ColourPair rulerCurrent;
 		ColourPair rulerLine;
+		ColourPair clock;
 
 		// functions
 		Theme();

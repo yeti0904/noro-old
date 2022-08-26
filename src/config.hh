@@ -10,4 +10,5 @@ struct AppConfig {
 	bool    highlightLine;
 	bool    ruler;
 	bool    rulerAlignRight;
+	bool    showClock;
 };
