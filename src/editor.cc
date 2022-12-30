@@ -211,10 +211,17 @@ void Editor::HandleInput(input_t input) {
 					}
 				}
 				moved = true;
-				break;
 			}
+			else {
+				if (parent->config->spacesIndent) {
+					InsertText(std::string(parent->config->tabSize, ' '));
+				}
+				else {
+					InsertText(std::string(1, '\t'));
+				}
+			}
+			break;
 		}
-		// fall through
 		default: {
 			InsertText(std::string(1, input));
 			moved = true;
