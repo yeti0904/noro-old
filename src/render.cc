@@ -44,9 +44,9 @@ void Renderers::Noro::Global(App& app, AppConfig& config) {
 	{
 		std::string bottomBarInfo;
 		bottomBarInfo =
-			std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.y)
+			std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.y + 1)
 				+ ":"
-			+ std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.x);
+			+ std::to_string(app.editorWindow.GetCurrentEditor().cursorPosition.x + 1);
 
 		// decide if bottom bar info should be rendered next to editor window title
 		if (
